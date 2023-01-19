@@ -15,7 +15,7 @@ This API is hosted on Google App Engine.
 > {"inputs":{"wallet":"0xE4508bE47D201847eAb75819740900f662657FAD","contract":"0x2a459947f0ac25ec28c197f09c2d88058a83f3bb"},"output":{"balance":3},"success":true}
 
 
-### nft_balance
+### token_balance
 - inputs: 
   - contract_address: address of NFT contract 
   - wallet_address: address of wallet
