@@ -1,56 +1,68 @@
-import express from 'express'
-const app = express()
-import bodyParser from 'body-parser'
+import express from 'express';
+import cors from 'cors';
+import bodyParser from 'body-parser';
+// const passport = require('passport');
+import path from 'path';
+import  fs from 'fs';
+const router = express.Router();
+const app = express();
 import dotenv from 'dotenv'
-dotenv.config();
-import { ethers } from 'ethers';
-import  {nft_abi}  from './abi.js';
+dotenv.config()
 
-app.use(bodyParser.json())
+const port = process.env.PORT || 5050;
 
-let provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL)
+/**
+ * Middleware
+ */
+app.use(cors());
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(
+  bodyParser.urlencoded({
+    limit: '50mb',
+    extended: true,
+    parameterLimit: 50000,
+  })
+);
+app.use(bodyParser.json());
 
-const PORT = process.env.PORT;
+// /**
+//  * JWT Auth
+//  */
+// app.use(passport.initialize());
+// require('./auth/passport')(passport);
 
-app.listen(PORT, () => {
-  console.log('Server started on port ' + PORT);
-});
+/**
+ * Routes
+ */
+import {router as functions} from './index.js';
+app.use('/', functions);
 
-app.get('/', (req, res) => {
-    res.send(`Available endpoints: 
-        /nft_balance
-    `);
-});
-
-app.get('/nft_balance', async (req, res) => {
-    const contract = req.query.contract_address;
-    const wallet = req.query.wallet_address;
-
-    let error = {errors: []};
-
-    if(contract === "" || contract === undefined) {
-        error.errors.push("Invalid or empty contract address");
-    }
-    if(wallet === "" || wallet === undefined) {
-        error.errors.push("Invalid or empty wallet address");
-    }
-    if(error.errors.length > 0) {
-        res.json(error);
-    }
-
+// Online check
+app.use(
+  '/',
+  router.get('/', (req, res) => {
     try {
-        const nft = new ethers.Contract(contract, nft_abi, provider);
-
-        const bal = await nft.balanceOf(wallet);
-    
-        const result = {
-            wallet: wallet,
-            contract: contract,
-            balance: parseInt(bal)
-        }
-
-        res.send(result);
+      res.json({ res: 'success' });
     } catch (err) {
+      res.json({ res: err });
     }
+  })
+);
 
+//Change to server.listen(...) for https
+app.listen(port, '0.0.0.0', err => {
+  if (err) throw err;
+  console.log(`Server is running on port: ${port}`);
 });
+
+const exitHandler = (exitCode, options) => {
+  console.log('Shutting down');
+
+  process.exit();
+};
+
+process.on('exit', exitHandler.bind(null, { exit: true }));
+process.on('SIGINT', exitHandler.bind(null, { exit: true }));
+process.on('SIGUSR1', exitHandler.bind(null, { exit: true }));
+process.on('SIGUSR2', exitHandler.bind(null, { exit: true }));
+process.on('uncaughtException', exitHandler.bind(null, { exit: true }));
