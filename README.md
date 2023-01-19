@@ -2,6 +2,9 @@
 This API is hosted on Google App Engine.
 
 ## Endpoints
-1. nft_balance
-> inputs: contract: address of NFT contract
->         wallet: address of wallet
+### nft_balance
+- inputs: 
+  - contract: address of NFT contract 
+  - wallet: address of wallet
+- outputs:
+  - json object containing wallet, contract, balance (int)
