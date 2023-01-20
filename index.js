@@ -125,33 +125,25 @@ router.get('/eth_balance', async (req, res) => {
     }
 
     res.json(result);
-
-
 })
 
 router.get('/goerli_relay', async (req, res) => {
-    if (!auth(req)) res.status(401).send('Access Denied');
-
+    !auth(req) ? res.status(401).send('Access Denied') : console.log('authorized');
     try{
         const privateKey = process.env.PRIVATE_KEY;
         const signer = new ethers.Wallet(privateKey, goerli_provider);
-
         const relayer = '0x2A0d1f0EE9c5584b1694BCa16879423432770A52';
-
         const signature = req.query.signature;
         const reqStruct = JSON.parse(req.query.reqStruct);
         const contract = new ethers.Contract(relayer, relayer_abi, goerli_provider);
-
         try{
             let result = await contract.connect(signer).execute(reqStruct, signature);
             await result.wait(1)
-
             const response = {
                 inputs: {signature: signature, reqStruct: reqStruct},
                 output: {data: result.hash},
                 success: true
             }
-
             res.json(response);
         } catch (error){
             res.json({success: false, message: error.message});
@@ -159,7 +151,6 @@ router.get('/goerli_relay', async (req, res) => {
     } catch(error) {
         res.json({success: false, errors: error});
     }
-
 })
 
 router.get('/get_selector', async (req, res) => {
@@ -224,8 +215,6 @@ router.get('/get_relay_nonce', async (req, res) => {
 })
 
 function auth(req) {
-
     if(!process.env.API_KEYS.split(',').includes(req.query.api_key)) return false;
     return true;
-
 }
