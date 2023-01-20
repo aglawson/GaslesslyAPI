@@ -139,16 +139,16 @@ router.get('/goerli_relay', async (req, res) => {
         const contract = new ethers.Contract(relayer, relayer_abi, goerli_provider);
 
         try{
-            let res = await contract.connect(signer).execute(reqStruct, signature);
-            await res.wait(1)
+            let result = await contract.connect(signer).execute(reqStruct, signature);
+            await result.wait(1)
 
-            const result = {
+            const response = {
                 inputs: {signature: signature, reqStruct: reqStruct},
-                output: {data: res.hash},
+                output: {data: result.hash},
                 success: true
             }
 
-            res.json(result);
+            res.json(response);
         } catch (error){
             res.json({success: false, message: error.message});
         }
