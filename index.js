@@ -26,11 +26,11 @@ const goerli_provider = new ethers.providers.JsonRpcProvider(process.env.RPC_GOE
 // });
 
 // example input
-// nft_balance?contract_address=0x2a459947f0ac25ec28c197f09c2d88058a83f3bb&wallet_address=0xE4508bE47D201847eAb75819740900f662657FAD
+// nft_balance?contract=0x2a459947f0ac25ec28c197f09c2d88058a83f3bb&wallet=0xE4508bE47D201847eAb75819740900f662657FAD
 router.get('/nft_balance', async (req, res) => {
-    //res.json({contract: req.query.contract_address, wallet: req.query.wallet_address});
-    const contract = req.query.contract_address;
-    const wallet = req.query.wallet_address;
+    //res.json({contract: req.query.contract, wallet: req.query.wallet});
+    const contract = req.query.contract;
+    const wallet = req.query.wallet;
 
     let error = {errors: []};
 
@@ -60,11 +60,11 @@ router.get('/nft_balance', async (req, res) => {
 });
 
 // example input
-// token_balance?contract_address=0x414BdFc701AeF58bE8AfDB1e38884d79B810C7D9&wallet_address=0xE4508bE47D201847eAb75819740900f662657FAD
+// token_balance?contract=0x414BdFc701AeF58bE8AfDB1e38884d79B810C7D9&wallet=0xE4508bE47D201847eAb75819740900f662657FAD
 router.get('/token_balance', async (req, res) => { 
     try {
-        const contract = req.query.contract_address;
-        const wallet = req.query.wallet_address;
+        const contract = req.query.contract;
+        const wallet = req.query.wallet;
 
         let error = {errors: []};
 
@@ -98,7 +98,7 @@ router.get('/token_balance', async (req, res) => {
 });
 
 router.get('/eth_balance', async (req, res) => {
-    const wallet = req.query.wallet_address;
+    const wallet = req.query.wallet;
     
     let error = {errors: []};
 
@@ -203,13 +203,13 @@ router.get('/get_encoded_params', async (req, res) => {
 
 router.get('/get_relay_nonce', async (req, res) => {
     try{
-        const wallet = req.query.wallet_address;
+        const wallet = req.query.wallet;
         const relayer = '0x2A0d1f0EE9c5584b1694BCa16879423432770A52';
         const relay = new ethers.Contract(relayer, relayer_abi, goerli_provider);
 
         const nonce = await relay.getNonce(wallet);
         const result = {
-            inputs: {wallet_address: wallet},
+            inputs: {wallet: wallet},
             output: {data: parseInt(nonce)},
             success: true
         }
