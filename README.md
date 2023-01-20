@@ -1,6 +1,9 @@
 # Node API
 This API is hosted on Google App Engine.
-
+You can interact the API using this base URL and appending the following endpoints to it.
+https://aglawson.uw.r.appspot.com
+## NOTE: DO NOT USE IN PRODUCTION. THIS API HAS VERY LOW RATE LIMITS.
+If you would like an API key (needed for access to goerli_relay) or an added function, feel free to email me at hire@aglawson.io
 ## Endpoints
 ### nft_balance
 - inputs: 
@@ -13,7 +16,6 @@ This API is hosted on Google App Engine.
 > https://api.link.app/nft_balance?contract=0x2a459947f0ac25ec28c197f09c2d88058a83f3bb&wallet=0xE4508bE47D201847eAb75819740900f662657FAD
 - example output
 > {"inputs":{"wallet":"0xE4508bE47D201847eAb75819740900f662657FAD","contract":"0x2a459947f0ac25ec28c197f09c2d88058a83f3bb"},"output":{"balance":3},"success":true}
-
 
 ### token_balance
 - inputs: 
@@ -42,7 +44,7 @@ This API is hosted on Google App Engine.
   - string of function name and parameter types (ex. transferFrom(address,address,uint256) )
 - outputs:
   - hash representing the function and parameter types
-  
+
 ### get_encoded_params
  - Description: 
    - Returns the hash of the transaction parameters. Useful for relay transactions.
