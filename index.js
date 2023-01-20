@@ -218,22 +218,3 @@ router.get('/get_relay_nonce', async (req, res) => {
         res.send(error);
     }
 })
-
-/*
-    const Req = {
-      from: userAddress,
-      to: recipient_contract,
-      value: 0,
-      gas: 100000,
-      nonce: nonce,
-      data: '0xa0712d68' + data
-    }
-
-    let message = ethers.utils.solidityKeccak256(
-      ['address', 'address', 'uint256', 'uint256', 'uint256', 'bytes'],
-      [Req.from, Req.to, Req.value, Req.gas, Req.nonce, Req.data] 
-    );
-
-    const arrayifyMessage = await ethers.utils.arrayify(message)
-    const flatSignature = await signer.signMessage(arrayifyMessage)
-*/
