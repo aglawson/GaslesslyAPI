@@ -127,7 +127,7 @@ router.get('/eth_balance', async (req, res) => {
 
 })
 
-router.get('/goerli-relay', async (req, res) => {
+router.get('/goerli_relay', async (req, res) => {
     try{
         const privateKey = process.env.PRIVATE_KEY;
         const signer = new ethers.Wallet(privateKey, goerli_provider);
@@ -135,7 +135,7 @@ router.get('/goerli-relay', async (req, res) => {
         const relayer = '0x2A0d1f0EE9c5584b1694BCa16879423432770A52';
 
         const signature = req.query.signature;
-        const reqStruct = req.query.reqStruct;
+        const reqStruct = JSON.parse(req.query.reqStruct);
         const contract = new ethers.Contract(relayer, relayer_abi, goerli_provider);
 
         try{
