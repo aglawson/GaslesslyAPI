@@ -12,7 +12,6 @@ router.use(bodyParser.json())
 const provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL)
 const goerli_provider = new ethers.providers.JsonRpcProvider(process.env.RPC_GOERLI);
 
-
 // const PORT = process.env.PORT;
 
 // app.listen(PORT, () => {
@@ -28,35 +27,38 @@ const goerli_provider = new ethers.providers.JsonRpcProvider(process.env.RPC_GOE
 // example input
 // nft_balance?contract=0x2a459947f0ac25ec28c197f09c2d88058a83f3bb&wallet=0xE4508bE47D201847eAb75819740900f662657FAD
 router.get('/nft_balance', async (req, res) => {
-    //res.json({contract: req.query.contract, wallet: req.query.wallet});
-    const contract = req.query.contract;
-    const wallet = req.query.wallet;
+    try{
+        const contract = req.query.contract;
+        const wallet = req.query.wallet;
 
-    let error = {errors: []};
+        let error = {errors: []};
 
-    if(contract === "" || contract === undefined) {
-        error.errors.push("Invalid or empty contract address");
+        if(contract === "" || contract === undefined) {
+            error.errors.push("Invalid or empty contract address");
+        }
+        if(wallet === "" || wallet === undefined) {
+            error.errors.push("Invalid or empty wallet address");
+        }
+        if(error.errors.length > 0) {
+            res.json({
+                errors: error,
+                success: false
+            });
+        }
+        const nft = new ethers.Contract(contract, nft_abi, provider);
+
+        const bal = await nft.balanceOf(wallet);
+
+        const result = {
+            inputs: {wallet: wallet, contract: contract},
+            output: {balance: parseInt(bal)},
+            success: true
+        }
+
+        res.json(result);
+    } catch (error) {
+        console.log(error);
     }
-    if(wallet === "" || wallet === undefined) {
-        error.errors.push("Invalid or empty wallet address");
-    }
-    if(error.errors.length > 0) {
-        res.json({
-            errors: error,
-            success: false
-        });
-    }
-    const nft = new ethers.Contract(contract, nft_abi, provider);
-
-    const bal = await nft.balanceOf(wallet);
-
-    const result = {
-        inputs: {wallet: wallet, contract: contract},
-        output: {balance: parseInt(bal)},
-        success: true
-    }
-
-    res.json(result);
 });
 
 // example input
@@ -128,6 +130,8 @@ router.get('/eth_balance', async (req, res) => {
 })
 
 router.get('/goerli_relay', async (req, res) => {
+    if (!auth(req)) res.status(401).send('Access Denied');
+
     try{
         const privateKey = process.env.PRIVATE_KEY;
         const signer = new ethers.Wallet(privateKey, goerli_provider);
@@ -218,3 +222,10 @@ router.get('/get_relay_nonce', async (req, res) => {
         res.send(error);
     }
 })
+
+function auth(req) {
+
+    if(!process.env.API_KEYS.split(',').includes(req.query.api_key)) return false;
+    return true;
+
+}
