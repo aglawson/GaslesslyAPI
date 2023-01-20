@@ -5,11 +5,13 @@ import bodyParser from 'body-parser'
 import dotenv from 'dotenv'
 dotenv.config();
 import { ethers } from 'ethers';
-import  {nft_abi, token_abi}  from './abi.js';
+import  {nft_abi, token_abi, selector_abi, relayer_abi}  from './abi.js';
 
 router.use(bodyParser.json())
 
-let provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL)
+const provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL)
+const goerli_provider = new ethers.providers.JsonRpcProvider(process.env.RPC_GOERLI);
+
 
 // const PORT = process.env.PORT;
 
@@ -23,6 +25,8 @@ let provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL)
 //     `);
 // });
 
+// example input
+// nft_balance?contract_address=0x2a459947f0ac25ec28c197f09c2d88058a83f3bb&wallet_address=0xE4508bE47D201847eAb75819740900f662657FAD
 router.get('/nft_balance', async (req, res) => {
     //res.json({contract: req.query.contract_address, wallet: req.query.wallet_address});
     const contract = req.query.contract_address;
@@ -55,6 +59,8 @@ router.get('/nft_balance', async (req, res) => {
     res.json(result);
 });
 
+// example input
+// token_balance?contract_address=0x414BdFc701AeF58bE8AfDB1e38884d79B810C7D9&wallet_address=0xE4508bE47D201847eAb75819740900f662657FAD
 router.get('/token_balance', async (req, res) => { 
     try {
         const contract = req.query.contract_address;
@@ -90,3 +96,144 @@ router.get('/token_balance', async (req, res) => {
     }
 
 });
+
+router.get('/eth_balance', async (req, res) => {
+    const wallet = req.query.wallet_address;
+    
+    let error = {errors: []};
+
+    if(wallet === "" || wallet === undefined) {
+        error.errors.push("Invalid or empty wallet address");
+    }
+    if(error.errors.length > 0) {
+        res.json({
+            errors: error,
+            success: false
+        });
+    }
+
+    /**
+     * @todo: add logic to get eth balance here
+     */
+
+    const result = {
+        inputs: {wallet: wallet},
+        output: {data: 0},
+        success: true
+    }
+
+    res.json(result);
+
+
+})
+
+router.get('/goerli-relay', async (req, res) => {
+    try{
+        const privateKey = process.env.PRIVATE_KEY;
+        const signer = new ethers.Wallet(privateKey, goerli_provider);
+
+        const relayer = '0x2A0d1f0EE9c5584b1694BCa16879423432770A52';
+
+        const signature = req.query.signature;
+        const reqStruct = req.query.reqStruct;
+        const contract = new ethers.Contract(relayer, relayer_abi, goerli_provider);
+
+        try{
+            let res = await contract.connect(signer).execute(reqStruct, signature);
+            await res.wait(1)
+
+            const result = {
+                inputs: {signature: signature, reqStruct: reqStruct},
+                output: {data: res.hash},
+                success: true
+            }
+
+            res.json(result);
+        } catch (error){
+            res.json({success: false, message: error.message});
+        }
+    } catch(error) {
+        res.json({success: false, errors: error});
+    }
+
+})
+
+router.get('/get_selector', async (req, res) => {
+    try{
+        const selector = new ethers.Contract('0xD7dA7285f732262B3Cc80639d27c5Ee87f2e3a70', selector_abi, goerli_provider);
+
+        let func = req.query.func;
+        const funcHash = await selector.getSelector(func);
+
+        const result = {
+            inputs: {func: func},
+            output: {data: funcHash},
+            success: true
+        }
+
+        res.json(result);
+    } catch(error) {
+        res.send(error);
+    }
+})
+
+router.get('/get_encoded_params', async (req, res) => {
+    try{
+        const abiCoder = new ethers.utils.AbiCoder();
+
+        const types = req.query.types.split(',');
+        const values = req.query.values.split(',');
+
+        console.log(types, values);
+
+        let data = abiCoder.encode(types, values);
+        data = data.slice(2,data.length);
+
+        const result = {
+            inputs: {types: types, values: values},
+            output: {data: data},
+            success: true
+        }
+
+        res.json(result);
+    } catch(error) {
+        res.send(error);
+    }
+})
+
+router.get('/get_relay_nonce', async (req, res) => {
+    try{
+        const wallet = req.query.wallet_address;
+        const relayer = '0x2A0d1f0EE9c5584b1694BCa16879423432770A52';
+        const relay = new ethers.Contract(relayer, relayer_abi, goerli_provider);
+
+        const nonce = await relay.getNonce(wallet);
+        const result = {
+            inputs: {wallet_address: wallet},
+            output: {data: parseInt(nonce)},
+            success: true
+        }
+        res.json(result);
+    } catch (error) {
+        res.send(error);
+    }
+})
+
+/*
+    const Req = {
+      from: userAddress,
+      to: recipient_contract,
+      value: 0,
+      gas: 100000,
+      nonce: nonce,
+      data: '0xa0712d68' + data
+    }
+
+    let message = ethers.utils.solidityKeccak256(
+      ['address', 'address', 'uint256', 'uint256', 'uint256', 'bytes'],
+      [Req.from, Req.to, Req.value, Req.gas, Req.nonce, Req.data] 
+    );
+
+    const arrayifyMessage = await ethers.utils.arrayify(message)
+    const flatSignature = await signer.signMessage(arrayifyMessage)
+*/
