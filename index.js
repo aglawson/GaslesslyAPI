@@ -6,7 +6,14 @@ import dotenv from 'dotenv'
 dotenv.config();
 import { ethers } from 'ethers';
 import  {nft_abi, token_abi, selector_abi, relayer_abi}  from './abi.js';
-
+import { Network, Alchemy } from "alchemy-sdk";
+const settings = {
+    apiKey: process.env.ALCHEMY_KEY, // Replace with your Alchemy API Key.
+    network: Network.ETH_MAINNET, // Replace with your network.
+};
+  
+const alchemy = new Alchemy(settings);
+  
 router.use(bodyParser.json())
 
 const provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL)
@@ -211,6 +218,53 @@ router.get('/get_relay_nonce', async (req, res) => {
         res.json(result);
     } catch (error) {
         res.send(error);
+    }
+})
+
+router.get('/owned_nfts', async(req, res) => {
+    try{
+        const wallet = req.query.wallet;
+
+        const nfts = await alchemy.nft.getNftsForOwner(wallet);
+
+        const total = nfts.totalCount;
+        let data = {total: 0, nfts: []};
+
+        for (const n of nfts.ownedNfts) {
+            data.nfts.push({
+                name: n.contract.name,
+                symbol: n.contract.symbol,
+                address: n.contract.address,
+                token_id: n.tokenId
+            });
+        }
+        data.total = total;
+
+        const result = {
+            inputs: {wallet: wallet},
+            output: {data: data},
+            success: true
+        }
+        res.json(result);
+    } catch (error) {
+        res.json({success: false, error: error})
+    }
+});
+
+router.get('/contract_owners', async (req, res) => {
+    try{
+        const contract = req.query.contract;
+
+        const owners = await alchemy.nft.getOwnersForContract(contract);
+
+        const result = {
+            inputs: {contract: contract},
+            output: {data: owners},
+            success: true
+        }
+        res.json(result);
+    } catch (error) {
+        res.json({success: false, error: error})
     }
 })
 

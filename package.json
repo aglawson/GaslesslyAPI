@@ -1,6 +1,7 @@
 {
   "type": "module",
   "dependencies": {
+    "alchemy-sdk": "^2.3.0",
     "axios": "^1.2.3",
     "body-parser": "^1.20.1",
     "cors": "^2.8.5",

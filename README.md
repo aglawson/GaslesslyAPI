@@ -28,15 +28,6 @@ If you would like an API key (needed for access to goerli_relay) or an added fun
 - example output
 > {"inputs":{"wallet":"0xE4508bE47D201847eAb75819740900f662657FAD","contract":"0x414BdFc701AeF58bE8AfDB1e38884d79B810C7D9"},"output":{"data":2959.02477},"success":true}
 
-### goerli_relay
-- Description:
-  - Sends a transaction to a relay contract which relays the transaction to the destination smart contract. Useful for meta transactions.
-- inputs:
-  - reqStruct: json object containing tx data (from, to, value, gas, nonce, data)
-  - signature: hash resulting from user signing the data in reqStruct
-- outputs:
-  - transaction hash if successful
-
 ### get_selector
 - Description:
   - Returns the selector hash for a given function and parameters. Useful for relay transactions.
@@ -61,3 +52,13 @@ If you would like an API key (needed for access to goerli_relay) or an added fun
     - wallet address of user
  - outputs:
     - nonce (int)
+
+### goerli_relay
+> NOTE: Recipient smart contract must be on Goerli Testnet, must be ERC-2771 Compatible, and must have trusted forwarder set as 0x2A0d1f0EE9c5584b1694BCa16879423432770A52
+- Description:
+  - Sends a transaction to a relay contract which relays the transaction to the destination smart contract. Useful for meta transactions.
+- inputs:
+  - reqStruct: json object containing tx data (from, to, value, gas, nonce, data)
+  - signature: hash resulting from user signing the data in reqStruct
+- outputs:
+  - transaction hash if successful
