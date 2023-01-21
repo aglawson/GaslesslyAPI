@@ -278,7 +278,6 @@ function auth(req) {
 }
 
 router.get('/merkle_proof', async (req, res) => {
-    // const type = req.query.type;
     try{
         const contract = req.query.contract;
         let whitelist = whitelists[contract].whitelist;
@@ -286,9 +285,6 @@ router.get('/merkle_proof', async (req, res) => {
         const leafNodes = whitelist.map(addr => keccak256(addr));
         const merkleTree = new MerkleTree(leafNodes, keccak256, {sortPairs: true});
         const root = merkleTree.getHexRoot();
-        // if(type == 'root') {
-        //   res.send(root);
-        // }
     
         const address = req.query.wallet;
         
@@ -303,12 +299,11 @@ router.get('/merkle_proof', async (req, res) => {
         }
         res.json(result);
     } catch (error) {
-        res.send(error);
+        res.json({error: error, success: false});
     }
 })
 
 router.get('/merkle_root', async (req, res) => {
-    // const type = req.query.type;
     try{
         const contract = req.query.contract;
         let whitelist = whitelists[contract].whitelist;
@@ -324,6 +319,6 @@ router.get('/merkle_root', async (req, res) => {
         }
         res.json(result);
     } catch (error) {
-        res.send(error);
+        res.json({error: error, success: false});
     }
 })
