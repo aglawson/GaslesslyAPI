@@ -7,6 +7,10 @@ dotenv.config();
 import { ethers } from 'ethers';
 import  {nft_abi, token_abi, selector_abi, relayer_abi}  from './abi.js';
 import { Network, Alchemy } from "alchemy-sdk";
+import { whitelists } from './info.js'
+import {MerkleTree} from "merkletreejs";
+import keccak256 from "keccak256";
+
 const settings = {
     apiKey: process.env.ALCHEMY_KEY, // Replace with your Alchemy API Key.
     network: Network.ETH_MAINNET, // Replace with your network.
@@ -272,3 +276,54 @@ function auth(req) {
     if(!process.env.API_KEYS.split(',').includes(req.query.api_key)) return false;
     return true;
 }
+
+router.get('/merkle_proof', async (req, res) => {
+    // const type = req.query.type;
+    try{
+        const contract = req.query.contract;
+        let whitelist = whitelists[contract].whitelist;
+
+        const leafNodes = whitelist.map(addr => keccak256(addr));
+        const merkleTree = new MerkleTree(leafNodes, keccak256, {sortPairs: true});
+        const root = merkleTree.getHexRoot();
+        // if(type == 'root') {
+        //   res.send(root);
+        // }
+    
+        const address = req.query.wallet;
+        
+        const leaf = keccak256(address);
+    
+        const proof = merkleTree.getHexProof(leaf);
+
+        const result = {
+            inputs: {contract: contract, wallet: address},
+            output: {data: proof},
+            success: true
+        }
+        res.json(result);
+    } catch (error) {
+        res.send(error);
+    }
+})
+
+router.get('/merkle_root', async (req, res) => {
+    // const type = req.query.type;
+    try{
+        const contract = req.query.contract;
+        let whitelist = whitelists[contract].whitelist;
+
+        const leafNodes = whitelist.map(addr => keccak256(addr));
+        const merkleTree = new MerkleTree(leafNodes, keccak256, {sortPairs: true});
+        const root = merkleTree.getHexRoot();
+
+        const result = {
+            inputs: {contract: contract},
+            output: {data: root},
+            success: true
+        }
+        res.json(result);
+    } catch (error) {
+        res.send(error);
+    }
+})
