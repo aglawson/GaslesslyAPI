@@ -5,7 +5,7 @@ import bodyParser from 'body-parser'
 import dotenv from 'dotenv'
 dotenv.config();
 import { ethers } from 'ethers';
-import  {nft_abi, token_abi, selector_abi, relayer_abi}  from './abi.js';
+import  {nft_abi, token_abi, selector_abi, relayer_abi, deploy_nft_abi, nft_bytecode}  from './abi.js';
 import { Network, Alchemy } from "alchemy-sdk";
 import { whitelists } from './info.js'
 import {MerkleTree} from "merkletreejs";
@@ -55,6 +55,7 @@ router.get('/nft_balance', async (req, res) => {
                 errors: error,
                 success: false
             });
+            return;
         }
         const nft = new ethers.Contract(contract, nft_abi, provider);
 
@@ -92,6 +93,7 @@ router.get('/token_balance', async (req, res) => {
                 errors: error,
                 success: false
             });
+            return;
         }
         const token = new ethers.Contract(contract, token_abi, provider);
         const bal = await token.balanceOf(wallet);
@@ -117,6 +119,7 @@ router.get('/eth_balance', async (req, res) => {
 
     if(wallet === "" || wallet === undefined) {
         error.errors.push("Invalid or empty wallet address");
+        return;
     }
     if(error.errors.length > 0) {
         res.json({
@@ -250,8 +253,10 @@ router.get('/owned_nfts', async(req, res) => {
             success: true
         }
         res.json(result);
+        return;
     } catch (error) {
         res.json({success: false, error: error})
+        return;
     }
 });
 
@@ -267,8 +272,10 @@ router.get('/contract_owners', async (req, res) => {
             success: true
         }
         res.json(result);
+        return;
     } catch (error) {
         res.json({success: false, error: error})
+        return;
     }
 })
 
@@ -298,8 +305,10 @@ router.get('/merkle_proof', async (req, res) => {
             success: true
         }
         res.json(result);
+        return;
     } catch (error) {
         res.json({error: error, success: false});
+        return;
     }
 })
 
@@ -318,7 +327,62 @@ router.get('/merkle_root', async (req, res) => {
             success: true
         }
         res.json(result);
+        return;
     } catch (error) {
         res.json({error: error, success: false});
+        return;
+    }
+})
+
+router.get('/deploy_nft', async (req, res) => {
+    try{
+        const wallet = req.query.wallet;
+
+        if(wallet === '' || wallet === undefined) {
+            res.json({error: 'No wallet address sent', success: false});
+            return;
+        }
+        
+        const SourceNFT = new ethers.Contract('0x933F6088681F5DCEB1636c839Ff75F4071D52132', deploy_nft_abi, goerli_provider);
+        const bal = await SourceNFT.balanceOf(wallet);
+
+        if(parseInt(bal) === 0) {
+            res.json({error: 'Must own an AGLD NFT first', success: false});
+            return;
+        } 
+
+        const name = req.query.name;
+        const symbol = req.query.symbol;
+        const maxSupply = req.query.maxSupply;
+        const price = req.query.price;
+        const whitelist_price = req.query.whitelist_price;
+
+        if(!name || !symbol || !maxSupply || !price || !whitelist_price) {
+            res.json({error: 'Please send values for: name, symbol, maxSupply, price, whitelist_price', success: false});
+            return;
+        }
+
+        const signer = new ethers.Wallet(process.env.PRIVATE_KEY, goerli_provider);
+
+        const NFT_Factory = new ethers.ContractFactory(deploy_nft_abi, nft_bytecode, signer);
+        const deployed_nft = await NFT_Factory.connect(signer).deploy(name, symbol, maxSupply, price, whitelist_price);
+        
+        await deployed_nft.deployed();
+
+        const transfer_ownership = await deployed_nft.connect(signer).transferOwnership(wallet);
+        await transfer_ownership.wait(1);
+
+        const result = {
+            inputs: {wallet: wallet},
+            output: {data: deployed_nft.address},
+            success: true
+        }
+        res.json(result);
+        return;
+
+    } catch (error) {
+        console.log(error);
+        res.json({error: error, success: false});
+        return;
     }
 })
