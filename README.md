@@ -1,9 +1,5 @@
 # Node API
 This API is hosted on Google App Engine.
-You can interact the API using this base URL and appending the following endpoints to it.
-https://aglawson.uw.r.appspot.com
-## NOTE: DO NOT USE IN PRODUCTION. THIS API HAS VERY LOW RATE LIMITS.
-If you would like an API key (needed for access to goerli_relay) or an added function, feel free to email me at hire@aglawson.io
 ## Endpoints
 ### nft_balance
 - inputs: 
