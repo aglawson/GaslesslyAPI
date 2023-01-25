@@ -11,16 +11,9 @@ import { whitelists } from './info.js'
 import {MerkleTree} from "merkletreejs";
 import keccak256 from "keccak256";
 
-// Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-//import { getAnalytics } from "firebase/analytics";
 import { getFirestore, collection, query, getDocs, where, setDoc, doc } from 'firebase/firestore/lite';
 
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: process.env.fb_key,
   authDomain: process.env.authDomain,
@@ -31,18 +24,13 @@ const firebaseConfig = {
   measurementId: process.env.measurementId
 };
 
-// Initialize Firebase
-//initializeApp(firebaseConfig);
-
 const fb = initializeApp(firebaseConfig);
 
 const db = getFirestore(fb);
 
-// const analytics = getAnalytics(fb_app);
-
 const settings = {
-    apiKey: process.env.ALCHEMY_KEY, // Replace with your Alchemy API Key.
-    network: Network.ETH_MAINNET, // Replace with your network.
+    apiKey: process.env.ALCHEMY_KEY, 
+    network: Network.ETH_MAINNET
 };
   
 const alchemy = new Alchemy(settings);
@@ -52,20 +40,6 @@ router.use(bodyParser.json())
 const provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL)
 const goerli_provider = new ethers.providers.JsonRpcProvider(process.env.RPC_GOERLI);
 
-// const PORT = process.env.PORT;
-
-// app.listen(PORT, () => {
-//   console.log('Server started on port ' + PORT);
-// });
-
-// router.get('/', (req, res) => {
-//     res.send(`Available endpoints: 
-//         /nft_balance
-//     `);
-// });
-
-// example input
-// nft_balance?contract=0x2a459947f0ac25ec28c197f09c2d88058a83f3bb&wallet=0xE4508bE47D201847eAb75819740900f662657FAD
 router.get('/nft_balance', async (req, res) => {
     try{
         const contract = req.query.contract;
@@ -102,8 +76,6 @@ router.get('/nft_balance', async (req, res) => {
     }
 });
 
-// example input
-// token_balance?contract=0x414BdFc701AeF58bE8AfDB1e38884d79B810C7D9&wallet=0xE4508bE47D201847eAb75819740900f662657FAD
 router.get('/token_balance', async (req, res) => { 
     try {
         const contract = req.query.contract;
