@@ -14,7 +14,7 @@ import keccak256 from "keccak256";
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 //import { getAnalytics } from "firebase/analytics";
-import { getFirestore, collection, getDocs } from 'firebase/firestore/lite';
+import { getFirestore, collection, query, getDocs, where, setDoc, doc } from 'firebase/firestore/lite';
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -22,7 +22,7 @@ import { getFirestore, collection, getDocs } from 'firebase/firestore/lite';
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: process.env.FIREBASE_KEY,
+  apiKey: process.env.fb_key,
   authDomain: process.env.authDomain,
   projectId: process.env.projectId,
   storageBucket: process.env.storageBucket,
@@ -32,7 +32,7 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-initializeApp(firebaseConfig);
+//initializeApp(firebaseConfig);
 
 const fb = initializeApp(firebaseConfig);
 
@@ -418,16 +418,52 @@ router.get('/deploy_nft', async (req, res) => {
 
 router.get('/test_firestore', async (req, res) => {
     try{
-        const users = collection(db, 'users');
-        console.log(users);
-        const userSnapshot = await getDocs(users);
+        const wallet = req.query.wallet;
+        const q = query(collection(db, "users"), where("wallet", "==", wallet));
+        const userSnapshot = await getDocs(q)
         if(userSnapshot.empty){
             res.send('empty');
             return;
         }
-        res.json(userSnapshot);
+        const users = userSnapshot.docs;
+        let result = [];
+        users.forEach(doc => {
+            result.push(doc.data())
+        })
+        res.json(result);
     } catch(error) {
         console.log(error);
         res.send(error);
     }
 })
+
+//0xE4508bE47D201847eAb75819740900f662657FAD
+router.get('/test_firestore_write', async (req, res) => {
+    try{
+        const wallet = req.query.wallet;
+        const usersRef = collection(db, 'users');
+        const q = query(collection(db, "users"), where("wallet", "==", wallet));
+        const userSnapshot = await getDocs(q);
+
+        //const userSnapshot = await getDocs(usersRef);
+        console.log(userSnapshot);
+        let owned_contracts = userSnapshot.docs[0].data().owned_contracts;
+        owned_contracts.push('test');
+        await setDoc(doc(usersRef, wallet), {
+            wallet: wallet,
+            owned_contracts: owned_contracts
+        })
+
+        res.send('write successful');
+    } catch(error) {
+        console.log(error);
+        res.send(error);
+    }
+})
+
+/**
+ * setDoc(doc(citiesRef, "SF"), {
+    name: "San Francisco", state: "CA", country: "USA",
+    capital: false, population: 860000,
+    regions: ["west_coast", "norcal"] });
+ */
