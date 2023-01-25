@@ -11,6 +11,35 @@ import { whitelists } from './info.js'
 import {MerkleTree} from "merkletreejs";
 import keccak256 from "keccak256";
 
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+//import { getAnalytics } from "firebase/analytics";
+import { getFirestore, collection, getDocs } from 'firebase/firestore/lite';
+
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: process.env.FIREBASE_KEY,
+  authDomain: process.env.authDomain,
+  projectId: process.env.projectId,
+  storageBucket: process.env.storageBucket,
+  messagingSenderId: process.env.messagingSenderId,
+  appId: process.env.appId,
+  measurementId: process.env.measurementId
+};
+
+// Initialize Firebase
+initializeApp(firebaseConfig);
+
+const fb = initializeApp(firebaseConfig);
+
+const db = getFirestore(fb);
+
+// const analytics = getAnalytics(fb_app);
+
 const settings = {
     apiKey: process.env.ALCHEMY_KEY, // Replace with your Alchemy API Key.
     network: Network.ETH_MAINNET, // Replace with your network.
@@ -384,5 +413,21 @@ router.get('/deploy_nft', async (req, res) => {
         console.log(error);
         res.json({error: error, success: false});
         return;
+    }
+})
+
+router.get('/test_firestore', async (req, res) => {
+    try{
+        const users = collection(db, 'users');
+        console.log(users);
+        const userSnapshot = await getDocs(users);
+        if(userSnapshot.empty){
+            res.send('empty');
+            return;
+        }
+        res.json(userSnapshot);
+    } catch(error) {
+        console.log(error);
+        res.send(error);
     }
 })
