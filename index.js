@@ -437,7 +437,6 @@ router.get('/test_firestore', async (req, res) => {
     }
 })
 
-//0xE4508bE47D201847eAb75819740900f662657FAD
 router.get('/test_firestore_write', async (req, res) => {
     try{
         const wallet = req.query.wallet;
@@ -460,10 +459,3 @@ router.get('/test_firestore_write', async (req, res) => {
         res.send(error);
     }
 })
-
-/**
- * setDoc(doc(citiesRef, "SF"), {
-    name: "San Francisco", state: "CA", country: "USA",
-    capital: false, population: 860000,
-    regions: ["west_coast", "norcal"] });
- */
