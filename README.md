@@ -58,3 +58,4 @@ This API is hosted on Google App Engine.
   - signature: hash resulting from user signing the data in reqStruct
 - outputs:
   - transaction hash if successful
+  

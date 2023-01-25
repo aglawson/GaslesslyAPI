@@ -1,0 +1,89 @@
+import {MerkleTree} from "merkletreejs";
+import keccak256 from "keccak256";
+import { deploy_nft_abi } from "../abi.js";
+import { initializeApp } from "firebase/app";
+import { ethers } from "ethers";
+import { getFirestore, collection, query, getDocs, where, setDoc, doc } from 'firebase/firestore/lite';
+
+const mainnet_provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL)
+const goerli_provider = new ethers.providers.JsonRpcProvider(process.env.RPC_GOERLI);
+
+const firebaseConfig = {
+    apiKey: process.env.fb_key,
+    authDomain: process.env.authDomain,
+    projectId: process.env.projectId,
+    storageBucket: process.env.storageBucket,
+    messagingSenderId: process.env.messagingSenderId,
+    appId: process.env.appId,
+    measurementId: process.env.measurementId
+};
+
+const fb = initializeApp(firebaseConfig);
+const db = getFirestore(fb);
+
+export const AppendWhitelist = async (req) => {
+    const contract = req.query.contract;
+    const addresses = req.query.wallets.split(',');
+    const network = req.query.network;
+
+    const code = network == 'goerli' ? await goerli_provider.getCode(contract) : network == 'mainnet' ? await provider.getCode(contract) : 'undefined';
+    if(code === 'undefined') {
+        throw('Network was not specified');
+    }
+    if(code === '0x') {
+        throw('Address entered is not a contract address');
+    }
+
+    const provider = network === 'goerli' ? goerli_provider : network === 'mainnet' ? mainnet_provider : console.log('Provider undefined')
+
+    const NFTContract = new ethers.Contract(contract, deploy_nft_abi, goerli_provider);
+    const isAdmin = await NFTContract.isAdmin(process.env.wallet_address);
+    console.log(isAdmin);
+
+    if(!isAdmin) {
+        throw('We are not authorized to update this contract');
+    }
+
+    const wlRef = collection(db, 'whitelists');
+    const q = query(collection(db, "whitelists"), where("contract", "==", contract));
+    const wlSnapshot = await getDocs(q);
+
+    let whitelist;
+    if(wlSnapshot.docs.length === 0) {
+        //wlRef = doc(db, 'whitelists', contract)
+        await setDoc(doc(wlRef, contract), {
+            addresses: addresses,
+            contract: contract
+        });
+
+        whitelist = addresses;
+    } else {
+        whitelist = wlSnapshot.docs[0].data().addresses;
+        for(let i = 0; i < addresses.length; i++) {
+            if(!whitelist.includes(addresses[i])){
+                whitelist.push(addresses[i]);
+            }
+        }
+
+        await setDoc(doc(wlRef, contract), {
+            addresses: whitelist,
+            contract: contract
+        });
+    }
+
+    const leafNodes = whitelist.map(addr => keccak256(addr));
+    const merkleTree = new MerkleTree(leafNodes, keccak256, {sortPairs: true});
+    const root = merkleTree.getHexRoot();
+
+    const result = {
+        inputs: {contract: contract},
+        output: {data: root},
+        success: true
+    }
+
+    const signer = new ethers.Wallet(process.env.PRIVATE_KEY, goerli_provider);
+
+    const tx = await NFTContract.connect(signer).setALRoot(root);
+    result.tx = tx.hash;
+    return result;
+}
