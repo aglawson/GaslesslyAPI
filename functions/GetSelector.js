@@ -1,11 +1,13 @@
 import { ethers } from 'ethers';
 import { selector_abi } from '../abi.js';
 import dotenv from 'dotenv'
+import { GetProvider } from './GetProvider.js';
 dotenv.config();
 
-const goerli_provider = new ethers.providers.JsonRpcProvider(process.env.RPC_GOERLI);
-
 export const GetSelector = async (req) => {
+    const network = req.query.network;
+    const provider = GetProvider(network);
+    
     const selector = new ethers.Contract('0xD7dA7285f732262B3Cc80639d27c5Ee87f2e3a70', selector_abi, goerli_provider);
 
     let func = req.query.func;

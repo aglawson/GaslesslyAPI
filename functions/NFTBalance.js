@@ -1,14 +1,15 @@
 import { ethers } from 'ethers';
 import { nft_abi } from '../abi.js';
 import dotenv from 'dotenv'
+import { GetProvider } from './GetProvider.js';
 dotenv.config();
-
-const provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL)
-const goerli_provider = new ethers.providers.JsonRpcProvider(process.env.RPC_GOERLI);
 
 export const NFTBalance = async(req) => {
     const contract = req.query.contract;
     const wallet = req.query.wallet;
+    const network = req.query.network;
+
+    const provider = GetProvider(network);
 
     let error = {errors: []};
 

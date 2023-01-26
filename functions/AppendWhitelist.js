@@ -4,9 +4,7 @@ import { deploy_nft_abi } from "../abi.js";
 import { initializeApp } from "firebase/app";
 import { ethers } from "ethers";
 import { getFirestore, collection, query, getDocs, where, setDoc, doc } from 'firebase/firestore/lite';
-
-const mainnet_provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL)
-const goerli_provider = new ethers.providers.JsonRpcProvider(process.env.RPC_GOERLI);
+import { GetProvider } from "./GetProvider.js";
 
 const firebaseConfig = {
     apiKey: process.env.fb_key,
@@ -26,15 +24,17 @@ export const AppendWhitelist = async (req) => {
     const addresses = req.query.wallets.split(',');
     const network = req.query.network;
 
-    const code = network == 'goerli' ? await goerli_provider.getCode(contract) : network == 'mainnet' ? await provider.getCode(contract) : 'undefined';
-    if(code === 'undefined') {
+    const provider = GetProvider(network);
+
+    const code = network === 'goerli' ? await provider.getCode(contract) : network === 'mainnet' ? await provider.getCode(contract) : 'invalid';
+
+    if(code === 'invalid') {
         throw('Network was not specified');
     }
     if(code === '0x') {
         throw('Address entered is not a contract address');
     }
 
-    const provider = network === 'goerli' ? goerli_provider : network === 'mainnet' ? mainnet_provider : console.log('Provider undefined')
 
     const NFTContract = new ethers.Contract(contract, deploy_nft_abi, goerli_provider);
     const isAdmin = await NFTContract.isAdmin(process.env.wallet_address);
@@ -80,10 +80,10 @@ export const AppendWhitelist = async (req) => {
         output: {data: root},
         success: true
     }
-
+    
     const signer = new ethers.Wallet(process.env.PRIVATE_KEY, goerli_provider);
 
-    const tx = await NFTContract.connect(signer).setALRoot(root);
-    result.tx = tx.hash;
+    const tx = await NFTContract.connect(signer).setALRoot(result.output.data);
+    result.output.tx = tx.hash;
     return result;
 }
