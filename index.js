@@ -19,6 +19,7 @@ import { DeployNFT } from './functions/DeployNFT.js'
 import { AppendWhitelist } from './functions/AppendWhitelist.js'
 import { ETHBalance } from './functions/ETHBalance.js'
 import { SignatureAuth } from './functions/SignatureAuth.js'
+import { GetOwnedContracts } from './functions/GetOwnedContracts.js'
 
 router.use(bodyParser.json())
 
@@ -163,5 +164,27 @@ router.get('/append_whitelist', async (req, res) => {
     } catch(error) {
         console.log(error);
         res.json({error: error, success: false});
+    }
+})
+
+router.get('/get_owned_contracts', async (req, res) => {
+    try {
+        const result = await GetOwnedContracts(req);
+
+        res.json(result);
+    } catch (error) {
+        console.log(error)
+        res.json({error: error, success: false});
+    }
+})
+
+router.get('/signature_auth', async (req, res) => {
+    try {
+        const auth = await SignatureAuth(req);
+
+        res.json(auth);
+    } catch (error) {
+        console.log(error);
+        res.json({success: false, error: error});
     }
 })

@@ -36,7 +36,6 @@ export const AppendWhitelist = async (req) => {
         throw('Address entered is not a contract address');
     }
 
-
     const NFTContract = new ethers.Contract(contract, deploy_nft_abi, provider);
     const isAdmin = await NFTContract.isAdmin(process.env.wallet_address);
     const owner = await NFTContract.owner();

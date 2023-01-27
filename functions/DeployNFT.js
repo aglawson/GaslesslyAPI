@@ -3,9 +3,24 @@ import  {deploy_nft_abi, nft_bytecode}  from '../abi.js';
 import dotenv from 'dotenv'
 import { GetProvider } from './GetProvider.js';
 dotenv.config();
+import { getFirestore, collection, query, getDocs, where, setDoc, doc } from 'firebase/firestore/lite';
+import { initializeApp } from "firebase/app";
+
+const firebaseConfig = {
+    apiKey: process.env.fb_key,
+    authDomain: process.env.authDomain,
+    projectId: process.env.projectId,
+    storageBucket: process.env.storageBucket,
+    messagingSenderId: process.env.messagingSenderId,
+    appId: process.env.appId,
+    measurementId: process.env.measurementId
+};
+
+const fb = initializeApp(firebaseConfig);
+const db = getFirestore(fb);
 
 export const DeployNFT = async (req) => {
-    const wallet = req.query.wallet;
+    let wallet = req.query.wallet;
     const network = req.query.network
 
     const provider = GetProvider(network);
@@ -13,6 +28,8 @@ export const DeployNFT = async (req) => {
     if(wallet === '' || wallet === undefined) {
         throw('No wallet address sent');
     }
+
+    wallet = wallet.toLowerCase();
     
     const SourceNFT = new ethers.Contract('0x933F6088681F5DCEB1636c839Ff75F4071D52132', deploy_nft_abi, provider);
     const bal = await SourceNFT.balanceOf(wallet);
@@ -45,6 +62,26 @@ export const DeployNFT = async (req) => {
         inputs: {wallet: wallet},
         output: {data: deployed_nft.address},
         success: true
+    }
+
+    const userRef = collection(db, 'users');
+    const q = query(userRef, where('wallet', '==', wallet));
+    const userSnapshot = await getDocs(q);
+
+    if(userSnapshot.docs.length === 0) {
+        await setDoc(doc(userRef, wallet), {
+            owned_contracts: [deployed_nft.address],
+            wallet: wallet
+        });
+
+    } else {
+        let contracts = userSnapshot.docs[0].data().owned_contracts;
+        contracts.push(deployed_nft.address);
+
+        await setDoc(doc(userRef, wallet), {
+            owned_contracts: contracts,
+            wallet: wallet
+        });
     }
 
     return result;
