@@ -31,10 +31,6 @@ export const SignatureAuth = async(req) => {
     // Make sure you arrayify the message if you want the bytes to be used as the message
     const recover = ethers.utils.verifyMessage(message, signature)
 
-    console.log('addresses', address, recover);
-    console.log('signature', signature);
-    console.log('message', message);
-
     if(recover !== address) return false;
 
     usedSignatures.push(signature);

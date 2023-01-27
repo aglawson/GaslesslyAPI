@@ -23,6 +23,7 @@ export const AppendWhitelist = async (req) => {
     const contract = req.query.contract;
     const addresses = req.query.wallets.split(',');
     const network = req.query.network;
+    const sender = req.query.wallet;
 
     const provider = GetProvider(network);
 
@@ -36,12 +37,18 @@ export const AppendWhitelist = async (req) => {
     }
 
 
-    const NFTContract = new ethers.Contract(contract, deploy_nft_abi, goerli_provider);
+    const NFTContract = new ethers.Contract(contract, deploy_nft_abi, provider);
     const isAdmin = await NFTContract.isAdmin(process.env.wallet_address);
+    const owner = await NFTContract.owner();
+    console.log(owner);
+    console.log(sender);
     console.log(isAdmin);
 
     if(!isAdmin) {
         throw('We are not authorized to update this contract');
+    }
+    if(owner.toLowerCase() !== sender.toLowerCase()) {
+        throw('Sender is not the contract owner');
     }
 
     const wlRef = collection(db, 'whitelists');
@@ -81,7 +88,7 @@ export const AppendWhitelist = async (req) => {
         success: true
     }
     
-    const signer = new ethers.Wallet(process.env.PRIVATE_KEY, goerli_provider);
+    const signer = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 
     const tx = await NFTContract.connect(signer).setALRoot(result.output.data);
     result.output.tx = tx.hash;

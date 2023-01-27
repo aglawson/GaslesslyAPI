@@ -141,6 +141,8 @@ router.get('/merkle_root', async (req, res) => {
 })
 
 router.get('/deploy_nft', async (req, res) => {
+    const auth = await SignatureAuth(req);
+    !auth ? res.status(401).send('Access Denied') : console.log('authorized');
     try{
         const result = await DeployNFT(req);
 
@@ -151,7 +153,8 @@ router.get('/deploy_nft', async (req, res) => {
 })
 
 router.get('/append_whitelist', async (req, res) => {
-    !auth(req) ? res.status(401).send('Access Denied') : console.log('authorized');
+    const auth = await SignatureAuth(req);
+    !auth ? res.status(401).send('Access Denied') : console.log('authorized');
 
     try{
         const result = await AppendWhitelist(req);
@@ -160,16 +163,5 @@ router.get('/append_whitelist', async (req, res) => {
     } catch(error) {
         console.log(error);
         res.json({error: error, success: false});
-    }
-})
-
-router.get('/signature_auth', async (req, res) => {
-    try{
-        const result = await SignatureAuth(req);
-
-        res.json(result);
-    } catch (error) {
-        console.log(error);
-        res.json({success: false, errors: error});
     }
 })
