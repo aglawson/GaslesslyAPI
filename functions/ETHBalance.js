@@ -1,27 +1,26 @@
-import { ethers } from "ethers";
 import { GetProvider } from "./GetProvider.js";
 
 export const ETHBalance = async (req) => {
-    const network = req.query.network;
-    const wallet = req.query.wallet;
-    
-    const provider = GetProvider(network);
+  const network = req.query.network;
+  const wallet = req.query.wallet;
 
-    if(provider === 'invalid') {
-        throw('Network was not specified')
-    }
+  const provider = GetProvider(network);
 
-    if(wallet === "" || wallet === undefined) {
-        throw("Invalid or empty wallet address");
-    }
+  if (provider === "invalid") {
+    throw "Network was not specified";
+  }
 
-    const balance = await provider.getBalance(wallet)
+  if (wallet === "" || wallet === undefined) {
+    throw "Invalid or empty wallet address";
+  }
 
-    const result = {
-        inputs: {wallet: wallet},
-        output: {data: (parseInt(balance) / 10**18).toFixed(6)},
-        success: true
-    }
+  const balance = await provider.getBalance(wallet);
 
-    return result;
-}
+  const result = {
+    inputs: { wallet: wallet },
+    output: { data: (parseInt(balance) / 10 ** 18).toFixed(6) },
+    success: true,
+  };
+
+  return result;
+};

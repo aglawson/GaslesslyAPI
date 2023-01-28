@@ -1,88 +1,111 @@
-import { ethers } from 'ethers';
-import  {deploy_nft_abi, nft_bytecode}  from '../abi.js';
-import dotenv from 'dotenv'
-import { GetProvider } from './GetProvider.js';
+import { ethers } from "ethers";
+import { deploy_nft_abi, nft_bytecode } from "../abi.js";
+import dotenv from "dotenv";
+import { GetProvider } from "./GetProvider.js";
 dotenv.config();
-import { getFirestore, collection, query, getDocs, where, setDoc, doc } from 'firebase/firestore/lite';
+import {
+  getFirestore,
+  collection,
+  query,
+  getDocs,
+  where,
+  setDoc,
+  doc,
+} from "firebase/firestore/lite";
 import { initializeApp } from "firebase/app";
 
 const firebaseConfig = {
-    apiKey: process.env.fb_key,
-    authDomain: process.env.authDomain,
-    projectId: process.env.projectId,
-    storageBucket: process.env.storageBucket,
-    messagingSenderId: process.env.messagingSenderId,
-    appId: process.env.appId,
-    measurementId: process.env.measurementId
+  apiKey: process.env.fb_key,
+  authDomain: process.env.authDomain,
+  projectId: process.env.projectId,
+  storageBucket: process.env.storageBucket,
+  messagingSenderId: process.env.messagingSenderId,
+  appId: process.env.appId,
+  measurementId: process.env.measurementId,
 };
 
 const fb = initializeApp(firebaseConfig);
 const db = getFirestore(fb);
 
 export const DeployNFT = async (req) => {
-    let wallet = req.query.wallet;
-    const network = req.query.network
+  let wallet = req.query.wallet;
+  const network = req.query.network;
 
-    const provider = GetProvider(network);
+  const provider = GetProvider(network);
 
-    if(wallet === '' || wallet === undefined) {
-        throw('No wallet address sent');
-    }
+  if (wallet === "" || wallet === undefined) {
+    throw "No wallet address sent";
+  }
 
-    wallet = wallet.toLowerCase();
-    
-    const SourceNFT = new ethers.Contract('0x933F6088681F5DCEB1636c839Ff75F4071D52132', deploy_nft_abi, provider);
-    const bal = await SourceNFT.balanceOf(wallet);
+  wallet = wallet.toLowerCase();
 
-    if(parseInt(bal) === 0) {
-        throw ('Must own an AGLD NFT first');
-    }
+  const SourceNFT = new ethers.Contract(
+    "0x933F6088681F5DCEB1636c839Ff75F4071D52132",
+    deploy_nft_abi,
+    provider
+  );
+  const bal = await SourceNFT.balanceOf(wallet);
 
-    const name = req.query.name;
-    const symbol = req.query.symbol;
-    const maxSupply = req.query.maxSupply;
-    const price = req.query.price;
-    const whitelist_price = req.query.whitelist_price;
+  if (parseInt(bal) === 0) {
+    throw "Must own an AGLD NFT first";
+  }
 
-    if(!name || !symbol || !maxSupply || !price || !whitelist_price) {
-        throw ('Please send values for: name, symbol, maxSupply, price, whitelist_price');
-    }
+  const name = req.query.name;
+  const symbol = req.query.symbol;
+  const maxSupply = req.query.maxSupply;
+  const price = req.query.price;
+  const whitelist_price = req.query.whitelist_price;
 
-    const signer = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
+  if (!name || !symbol || !maxSupply || !price || !whitelist_price) {
+    throw "Please send values for: name, symbol, maxSupply, price, whitelist_price";
+  }
 
-    const NFT_Factory = new ethers.ContractFactory(deploy_nft_abi, nft_bytecode, signer);
-    const deployed_nft = await NFT_Factory.connect(signer).deploy(name, symbol, maxSupply, price, whitelist_price);
-    
-    await deployed_nft.deployed();
+  const signer = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 
-    const transfer_ownership = await deployed_nft.connect(signer).transferOwnership(wallet);
-    await transfer_ownership.wait(1);
+  const NFT_Factory = new ethers.ContractFactory(
+    deploy_nft_abi,
+    nft_bytecode,
+    signer
+  );
+  const deployed_nft = await NFT_Factory.connect(signer).deploy(
+    name,
+    symbol,
+    maxSupply,
+    price,
+    whitelist_price
+  );
 
-    const result = {
-        inputs: {wallet: wallet},
-        output: {data: deployed_nft.address},
-        success: true
-    }
+  await deployed_nft.deployed();
 
-    const userRef = collection(db, 'users');
-    const q = query(userRef, where('wallet', '==', wallet));
-    const userSnapshot = await getDocs(q);
+  const transfer_ownership = await deployed_nft
+    .connect(signer)
+    .transferOwnership(wallet);
+  await transfer_ownership.wait(1);
 
-    if(userSnapshot.docs.length === 0) {
-        await setDoc(doc(userRef, wallet), {
-            owned_contracts: [deployed_nft.address],
-            wallet: wallet
-        });
+  const result = {
+    inputs: { wallet: wallet },
+    output: { data: deployed_nft.address },
+    success: true,
+  };
 
-    } else {
-        let contracts = userSnapshot.docs[0].data().owned_contracts;
-        contracts.push(deployed_nft.address);
+  const userRef = collection(db, "users");
+  const q = query(userRef, where("wallet", "==", wallet));
+  const userSnapshot = await getDocs(q);
 
-        await setDoc(doc(userRef, wallet), {
-            owned_contracts: contracts,
-            wallet: wallet
-        });
-    }
+  if (userSnapshot.docs.length === 0) {
+    await setDoc(doc(userRef, wallet), {
+      owned_contracts: [deployed_nft.address],
+      wallet: wallet,
+    });
+  } else {
+    let contracts = userSnapshot.docs[0].data().owned_contracts;
+    contracts.push(deployed_nft.address);
 
-    return result;
-}
+    await setDoc(doc(userRef, wallet), {
+      owned_contracts: contracts,
+      wallet: wallet,
+    });
+  }
+
+  return result;
+};
