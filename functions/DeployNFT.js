@@ -31,12 +31,12 @@ export const DeployNFT = async (req) => {
 
     wallet = wallet.toLowerCase();
     
-    const SourceNFT = new ethers.Contract('0x933F6088681F5DCEB1636c839Ff75F4071D52132', deploy_nft_abi, provider);
-    const bal = await SourceNFT.balanceOf(wallet);
+    // const SourceNFT = new ethers.Contract('0x933F6088681F5DCEB1636c839Ff75F4071D52132', deploy_nft_abi, provider);
+    // const bal = await SourceNFT.balanceOf(wallet);
 
-    if(parseInt(bal) === 0) {
-        throw ('Must own an AGLD NFT first');
-    }
+    // if(parseInt(bal) === 0) {
+    //     throw ('Must own an AGLD NFT first');
+    // }
 
     const name = req.query.name;
     const symbol = req.query.symbol;
