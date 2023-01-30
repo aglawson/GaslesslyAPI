@@ -19,6 +19,7 @@ import { AppendWhitelist } from './functions/AppendWhitelist.js'
 import { ETHBalance } from './functions/ETHBalance.js'
 import { SignatureAuth } from './functions/SignatureAuth.js'
 import { GetOwnedContracts } from './functions/GetOwnedContracts.js'
+import { SetState } from './functions/SetState.js';
 
 router.use(bodyParser.json())
 
@@ -321,6 +322,18 @@ router.get('/signature_auth', async (req, res) => {
         res.json(auth);
     } catch (error) {
         console.log(error);
+        res.json({success: false, error: error});
+    }
+})
+
+router.get('/set_state', async (req, res) => {
+    try {
+        const auth = await SignatureAuth(req);
+        !auth ? res.status(401).send('Access Denied') : console.log('authorized');
+
+        const result = await SetState(req);
+        res.json(result);        
+    } catch (error) {
         res.json({success: false, error: error});
     }
 })

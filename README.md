@@ -49,7 +49,7 @@ This API is hosted on Google App Engine.
  - outputs:
     - nonce (int)
 
-### goerli_relay
+### relay
 > NOTE: Recipient smart contract must be on Goerli Testnet, must be ERC-2771 Compatible, and must have trusted forwarder set as 0x2A0d1f0EE9c5584b1694BCa16879423432770A52
 - Description:
   - Sends a transaction to a relay contract which relays the transaction to the destination smart contract. Useful for meta transactions.
@@ -58,4 +58,3 @@ This API is hosted on Google App Engine.
   - signature: hash resulting from user signing the data in reqStruct
 - outputs:
   - transaction hash if successful
-  
