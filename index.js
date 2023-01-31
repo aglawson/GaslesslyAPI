@@ -326,6 +326,18 @@ router.get('/signature_auth', async (req, res) => {
     }
 })
 
+/**
+ * @param req includes the following members
+ * wallet - address of user (must be contract owner)
+ * contract - address of contract being updated
+ * state - integer from 0 - 2 (0->closed, 1->allow list only, 2->public mint)
+ * network - 'goerli' or 'mainnet', whichever the contract is on
+ * 
+ * message - message being signed by wallet
+ * signature - hash resulting from wallet signature of message
+ * 
+ * @returns tx hash of state update call
+ */
 router.get('/set_state', async (req, res) => {
     try {
         const auth = await SignatureAuth(req);
