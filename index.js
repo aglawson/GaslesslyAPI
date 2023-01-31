@@ -296,6 +296,8 @@ router.get('/append_whitelist', async (req, res) => {
  * @note only returns data about contracts deployed through this API
  */
 router.get('/get_owned_contracts', async (req, res) => {
+    const auth = await SignatureAuth(req);
+    !auth ? res.status(401).send('Access Denied') : console.log('authorized');
     try {
         const result = await GetOwnedContracts(req);
 
