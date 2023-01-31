@@ -1,3 +1,8 @@
+/**
+ * @description This file contains the logic to return the hash
+ * of smart contract function parameters. This is useful when 
+ * creating a Meta Transaction.
+ */
 import { ethers } from 'ethers';
 
 export const GetEncodedParams = async (req) => {

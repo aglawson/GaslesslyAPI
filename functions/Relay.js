@@ -12,9 +12,11 @@ export const Relay = async (req) => {
     const relayer = '0x2A0d1f0EE9c5584b1694BCa16879423432770A52';
     const signature = req.query.signature;
     const reqStruct = JSON.parse(req.query.reqStruct);
+
     const contract = new ethers.Contract(relayer, relayer_abi, provider);
     let result = await contract.connect(signer).execute(reqStruct, signature);
     await result.wait(1)
+    
     const response = {
         inputs: {signature: signature, reqStruct: reqStruct},
         output: {data: result.hash},

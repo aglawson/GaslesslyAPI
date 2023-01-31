@@ -1,3 +1,8 @@
+/**
+ * @description This file contains logic to return a hash of a 
+ * function and its expected parameter types. This is useful for
+ * creating a Meta Transaction.
+ */
 import { ethers } from 'ethers';
 import { selector_abi } from '../abi.js';
 import dotenv from 'dotenv'

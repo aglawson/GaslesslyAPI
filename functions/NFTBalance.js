@@ -30,4 +30,3 @@ export const NFTBalance = async(req) => {
 
     return result;
 }
-

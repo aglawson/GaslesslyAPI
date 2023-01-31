@@ -1,3 +1,10 @@
+/**
+ * @description This file contains the logic necessary to deploy an NFT smart contract.
+ * It takes in the details about the NFT collection - detailed in index.js, uses a wallet
+ * signature to verify that 'wallet' is the original sender of the call. Once the NFT 
+ * smart contract is deployed, ownership is transferred from the deployer wallet to the
+ * function caller.
+ */
 import { ethers } from 'ethers';
 import  {deploy_nft_abi, nft_bytecode}  from '../abi.js';
 import dotenv from 'dotenv'
@@ -29,32 +36,32 @@ export const DeployNFT = async (req) => {
         throw('No wallet address sent');
     }
 
+    // Enforce lower case to simplify DB queries 
     wallet = wallet.toLowerCase();
-    
-    // const SourceNFT = new ethers.Contract('0x933F6088681F5DCEB1636c839Ff75F4071D52132', deploy_nft_abi, provider);
-    // const bal = await SourceNFT.balanceOf(wallet);
 
-    // if(parseInt(bal) === 0) {
-    //     throw ('Must own an AGLD NFT first');
-    // }
-
+    // NFT Details
     const name = req.query.name;
     const symbol = req.query.symbol;
     const maxSupply = req.query.maxSupply;
     const price = req.query.price;
     const whitelist_price = req.query.whitelist_price;
 
+    // Make sure all required parameters were sent
     if(!name || !symbol || !maxSupply || !price || !whitelist_price) {
         throw ('Please send values for: name, symbol, maxSupply, price, whitelist_price');
     }
 
+    // Initialize contract deployer
     const signer = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 
+    // Initialize smart contract
     const NFT_Factory = new ethers.ContractFactory(deploy_nft_abi, nft_bytecode, signer);
     const deployed_nft = await NFT_Factory.connect(signer).deploy(name, symbol, maxSupply, price, whitelist_price);
     
     await deployed_nft.deployed();
 
+    // Transfer ownership to function caller - deployer wallet retains admin access on contract to update
+    // state, whitelist, URI on contract owner's behalf
     const transfer_ownership = await deployed_nft.connect(signer).transferOwnership(wallet);
     await transfer_ownership.wait(1);
 
@@ -64,6 +71,7 @@ export const DeployNFT = async (req) => {
         success: true
     }
 
+    // Add smart contract address to user object
     const userRef = collection(db, 'users');
     const q = query(userRef, where('wallet', '==', wallet));
     const userSnapshot = await getDocs(q);
