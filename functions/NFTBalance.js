@@ -11,20 +11,13 @@ export const NFTBalance = async(req) => {
 
     const provider = GetProvider(network);
 
-    let error = {errors: []};
-
     if(contract === "" || contract === undefined) {
-        error.errors.push("Invalid or empty contract address");
+        throw 'Invalid or empty contract address'
     }
     if(wallet === "" || wallet === undefined) {
-        error.errors.push("Invalid or empty wallet address");
+        throw 'Invalid or empty wallet address'
     }
-    if(error.errors.length > 0) {
-        return {
-            errors: error,
-            success: false
-        };
-    }
+
     const nft = new ethers.Contract(contract, nft_abi, provider);
 
     const bal = await nft.balanceOf(wallet);

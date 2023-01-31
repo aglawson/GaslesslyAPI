@@ -1,12 +1,21 @@
-import { Network, Alchemy } from "alchemy-sdk";
-const settings = {
-    apiKey: process.env.ALCHEMY_KEY, 
-    network: Network.ETH_MAINNET
-};
-  
-const alchemy = new Alchemy(settings);
+import { Alchemy } from "alchemy-sdk";
 
 export const OwnedNFTs = async (req) => {
+    const network = req.query.network
+    const setNetwork = network === 'mainnet' ? "eth-mainnet" : network === 'goerli' ? "eth-goerli" : network === 'polygon' ? "polygon-mainnet" : 'invalid'
+
+    let settings = {
+        apiKey: process.env.ALCHEMY_KEY, 
+        network: setNetwork
+    };
+    
+    const alchemy = new Alchemy(settings);
+
+    //settings.apiKey = network === 'polygon' ? process.env.ALCHEMY_POLYGON : settings.apiKey
+
+    if(settings.network === 'invalid'){
+        throw 'Network was not specified'
+    }
     const wallet = req.query.wallet;
 
     const nfts = await alchemy.nft.getNftsForOwner(wallet);

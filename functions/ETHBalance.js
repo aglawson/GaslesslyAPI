@@ -1,4 +1,3 @@
-import { ethers } from "ethers";
 import { GetProvider } from "./GetProvider.js";
 
 export const ETHBalance = async (req) => {

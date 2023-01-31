@@ -47,7 +47,7 @@ router.get('/nft_balance', async (req, res) => {
 
         res.json(result);
     } catch (error) {
-        console.log(error);
+        res.json({success: false, error: error});
     }
 });
 
@@ -170,6 +170,7 @@ router.get('/owned_nfts', async(req, res) => {
 
         res.json(result);
     } catch (error) {
+        console.log(error);
         res.json({success: false, error: error})
     }
 });
