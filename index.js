@@ -352,3 +352,15 @@ router.get('/set_state', async (req, res) => {
         res.json({success: false, error: error});
     }
 })
+
+router.get('/set_price', async (req,res) => {
+    try{
+        const auth = await SignatureAuth(req);
+        !auth ? res.status(401).send('Access Denied') : console.log('authorized');
+
+        const result = await SetPrice(req);
+        res.json(result);
+    } catch (error) {
+        res.json({success: false, error: error});
+    }
+})

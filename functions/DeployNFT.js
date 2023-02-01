@@ -45,9 +45,10 @@ export const DeployNFT = async (req) => {
     const maxSupply = req.query.maxSupply;
     const price = req.query.price;
     const whitelist_price = req.query.whitelist_price;
+    const URI = req.query.uri;
 
     // Make sure all required parameters were sent
-    if(!name || !symbol || !maxSupply || !price || !whitelist_price) {
+    if(!name || !symbol || !maxSupply || !price || !whitelist_price || !URI) {
         throw ('Please send values for: name, symbol, maxSupply, price, whitelist_price');
     }
 
@@ -56,7 +57,7 @@ export const DeployNFT = async (req) => {
 
     // Initialize smart contract
     const NFT_Factory = new ethers.ContractFactory(deploy_nft_abi, nft_bytecode, signer);
-    const deployed_nft = await NFT_Factory.connect(signer).deploy(name, symbol, maxSupply, price, whitelist_price);
+    const deployed_nft = await NFT_Factory.connect(signer).deploy(name, symbol, maxSupply, price, whitelist_price, URI);
     
     await deployed_nft.deployed();
 
