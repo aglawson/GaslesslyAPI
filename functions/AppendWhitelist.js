@@ -39,6 +39,8 @@ export const AppendWhitelist = async (req) => {
     const sender = req.query.wallet
 
     const provider = GetProvider(network)
+    let gasPrice = await provider.getGasPrice()
+    gasPrice = parseInt(gasPrice)
 
     // Check if contract address sent with request is actually a smart contract
     const code = await provider.getCode(contract)
@@ -105,7 +107,7 @@ export const AppendWhitelist = async (req) => {
     const signer = new ethers.Wallet(process.env.PRIVATE_KEY, provider)
 
     // Write new Merkle Root to smart contract
-    const tx = await NFTContract.connect(signer).setALRoot(result.output.data)
+    const tx = await NFTContract.connect(signer).setALRoot(result.output.data, {gasPrice: gasPrice})
     result.output.tx = tx.hash
 
     return result

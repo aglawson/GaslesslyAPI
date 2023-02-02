@@ -18,6 +18,8 @@ export const SetState = async (req) => {
     const sender = req.query.wallet
 
     const provider = GetProvider(network)
+    let gasPrice = await provider.getGasPrice();
+    gasPrice = parseInt(gasPrice);
 
     // Make sure given contract address is a smart contract
     const code = await provider.getCode(contract)
@@ -51,7 +53,7 @@ export const SetState = async (req) => {
 
     // Construct signer and send transaction on behalf 
     const signer = new ethers.Wallet(process.env.PRIVATE_KEY, provider)
-    const tx = await NFTContract.connect(signer).setState(state)
+    const tx = await NFTContract.connect(signer).setState(state, {gasPrice: gasPrice})
 
     result.output.tx = tx.hash
     return result
