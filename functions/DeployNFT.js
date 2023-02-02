@@ -60,7 +60,6 @@ export const DeployNFT = async (req) => {
     // Initialize smart contract
     const NFT_Factory = new ethers.ContractFactory(deploy_nft_abi, nft_bytecode, signer)
     const deployed_nft = await NFT_Factory.connect(signer).deploy(name, symbol, maxSupply, price.toString(), whitelist_price.toString(), URI, {gasPrice: gasPrice})
-    
     await deployed_nft.deployed()
 
     // Transfer ownership to function caller - deployer wallet retains admin access on contract to update
@@ -94,6 +93,6 @@ export const DeployNFT = async (req) => {
             wallet: wallet
         })
     }
+    
     return result
-
 }

@@ -3,7 +3,7 @@
  * of smart contract function parameters. This is useful when 
  * creating a Meta Transaction.
  */
-import { ethers } from 'ethers';
+import { ethers } from 'ethers'
 
 export const GetEncodedParams = async (req) => {
     const abiCoder = new ethers.utils.AbiCoder()

@@ -4,7 +4,6 @@
  */
 import { Alchemy } from "alchemy-sdk"
 
-
 export const ContractOwners = async (req) => {
     const contract = req.query.contract
     const network = req.query.network

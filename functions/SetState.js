@@ -56,5 +56,6 @@ export const SetState = async (req) => {
     const tx = await NFTContract.connect(signer).setState(state, {gasPrice: gasPrice})
 
     result.output.tx = tx.hash
+    
     return result
 }

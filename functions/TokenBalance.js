@@ -23,7 +23,6 @@ export const TokenBalance = async (req) => {
     const token = new ethers.Contract(contract, token_abi, provider)
     const bal = await token.balanceOf(wallet)
     
-
     const result = {
         inputs: {wallet: wallet, contract: contract},
         output: {data: parseFloat(bal) / 10**18},

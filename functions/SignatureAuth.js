@@ -52,5 +52,4 @@ export const SignatureAuth = async(req) => {
 
     // If all checks are passed, return true
     return true
-
 }

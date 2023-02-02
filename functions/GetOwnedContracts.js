@@ -40,5 +40,6 @@ export const GetOwnedContracts = async (req) => {
         output: {data: owned_contracts},
         success: true
     }
+    
     return result
 }

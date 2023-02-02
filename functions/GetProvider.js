@@ -1,7 +1,7 @@
 import { ethers } from "ethers"
 
 export const GetProvider = (network) => {
-    let provider;
+    let provider
     if(network === 'goerli') {
         provider = new ethers.providers.JsonRpcProvider(process.env.RPC_GOERLI)
 
