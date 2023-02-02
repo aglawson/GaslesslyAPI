@@ -33,7 +33,6 @@ export const DeployNFT = async (req) => {
     const provider = GetProvider(network)
     let gasPrice = await provider.getGasPrice()
     gasPrice = parseInt(gasPrice)
-    console.log(gasPrice)
 
     if(wallet === '' || wallet === undefined) {
         throw('No wallet address sent')
@@ -52,7 +51,7 @@ export const DeployNFT = async (req) => {
 
     // Make sure all required parameters were sent
     if(!name || !symbol || !maxSupply || !price || !whitelist_price || !URI) {
-        throw ('Please send values for: name, symbol, maxSupply, price, whitelist_price')
+        throw 'Please send values for: name, symbol, maxSupply, price, whitelist_price'
     }
 
     // Initialize contract deployer
@@ -63,13 +62,11 @@ export const DeployNFT = async (req) => {
     const deployed_nft = await NFT_Factory.connect(signer).deploy(name, symbol, maxSupply, price.toString(), whitelist_price.toString(), URI, {gasPrice: gasPrice})
     
     await deployed_nft.deployed()
-    console.log('deployed')
 
     // Transfer ownership to function caller - deployer wallet retains admin access on contract to update
     // state, whitelist, URI on contract owner's behalf
     const transfer_ownership = await deployed_nft.connect(signer).transferOwnership(wallet, {gasPrice: gasPrice})
     await transfer_ownership.wait(1)
-    console.log('ownership transferred')
 
     const result = {
         inputs: {wallet: wallet},

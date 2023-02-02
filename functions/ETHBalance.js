@@ -4,14 +4,14 @@ export const ETHBalance = async (req) => {
     const network = req.query.network;
     const wallet = req.query.wallet;
     
-    const provider = GetProvider(network);
+    const provider = GetProvider(network)
 
     if(provider === 'invalid') {
         throw('Network was not specified')
     }
 
     if(wallet === "" || wallet === undefined) {
-        throw("Invalid or empty wallet address");
+        throw "Invalid or empty wallet address"
     }
 
     const balance = await provider.getBalance(wallet)

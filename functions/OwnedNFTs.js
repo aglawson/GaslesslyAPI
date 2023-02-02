@@ -1,4 +1,4 @@
-import { Alchemy } from "alchemy-sdk";
+import { Alchemy } from "alchemy-sdk"
 
 export const OwnedNFTs = async (req) => {
     const network = req.query.network
@@ -7,21 +7,21 @@ export const OwnedNFTs = async (req) => {
     let settings = {
         apiKey: process.env.ALCHEMY_KEY, 
         network: setNetwork
-    };
+    }
     
-    const alchemy = new Alchemy(settings);
+    const alchemy = new Alchemy(settings)
 
     //settings.apiKey = network === 'polygon' ? process.env.ALCHEMY_POLYGON : settings.apiKey
 
     if(settings.network === 'invalid'){
         throw 'Network was not specified'
     }
-    const wallet = req.query.wallet;
+    const wallet = req.query.wallet
 
-    const nfts = await alchemy.nft.getNftsForOwner(wallet);
+    const nfts = await alchemy.nft.getNftsForOwner(wallet)
 
-    const total = nfts.totalCount;
-    let data = {total: 0, nfts: []};
+    const total = nfts.totalCount
+    let data = {total: 0, nfts: []}
 
     for (const n of nfts.ownedNfts) {
         data.nfts.push({
@@ -29,9 +29,9 @@ export const OwnedNFTs = async (req) => {
             symbol: n.contract.symbol,
             address: n.contract.address,
             token_id: n.tokenId
-        });
+        })
     }
-    data.total = total;
+    data.total = total
 
     const result = {
         inputs: {wallet: wallet},
@@ -39,5 +39,5 @@ export const OwnedNFTs = async (req) => {
         success: true
     }
 
-    return result;
+    return result
 }

@@ -45,10 +45,10 @@ export const AppendWhitelist = async (req) => {
     // Check if contract address sent with request is actually a smart contract
     const code = await provider.getCode(contract)
     if(code === 'invalid') {
-        throw('Network was not specified')
+        throw 'Network was not specified'
     }
     if(code === '0x') {
-        throw('Address entered is not a contract address')
+        throw 'Address entered is not a contract address'
     }
 
     const NFTContract = new ethers.Contract(contract, deploy_nft_abi, provider)
@@ -58,10 +58,10 @@ export const AppendWhitelist = async (req) => {
     const isAdmin = await NFTContract.isAdmin(process.env.wallet_address)
     const owner = await NFTContract.owner()
     if(!isAdmin) {
-        throw('We are not authorized to update this contract')
+        throw 'We are not authorized to update this contract'
     }
     if(owner.toLowerCase() !== sender.toLowerCase()) {
-        throw('Sender is not the contract owner')
+        throw 'Sender is not the contract owner'
     }
 
     // Retrieve whitelist associated with contract address

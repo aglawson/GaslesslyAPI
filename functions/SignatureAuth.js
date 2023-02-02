@@ -4,9 +4,9 @@
  * prevent updates and deployments from being performed on behalf of a wallet who 
  * did not request it. 
  */
-import { initializeApp } from "firebase/app";
-import { ethers } from "ethers";
-import { getFirestore, collection, query, getDocs, where, setDoc, doc } from 'firebase/firestore/lite';
+import { initializeApp } from "firebase/app"
+import { ethers } from "ethers"
+import { getFirestore, collection, query, getDocs, where, setDoc, doc } from 'firebase/firestore/lite'
 0
 const firebaseConfig = {
     apiKey: process.env.fb_key,
@@ -16,41 +16,41 @@ const firebaseConfig = {
     messagingSenderId: process.env.messagingSenderId,
     appId: process.env.appId,
     measurementId: process.env.measurementId
-};
+}
 
-const fb = initializeApp(firebaseConfig);
-const db = getFirestore(fb);
+const fb = initializeApp(firebaseConfig)
+const db = getFirestore(fb)
 
 export const SignatureAuth = async(req) => {
     // signature and message are required to recover the 
     // original signer
-    const signature = req.query.signature;
-    const address = req.query.wallet;
-    const message = req.query.message;
+    const signature = req.query.signature
+    const address = req.query.wallet
+    const message = req.query.message
 
     // Retrieve all used signatures from DB 
-    const sigRef = collection(db, 'Signatures');
-    const q = query(sigRef);
-    const sigSnapshot = await getDocs(q);
+    const sigRef = collection(db, 'Signatures')
+    const q = query(sigRef)
+    const sigSnapshot = await getDocs(q)
 
-    let usedSignatures = sigSnapshot.docs[0].data().usedSignatures;
+    let usedSignatures = sigSnapshot.docs[0].data().usedSignatures
 
     // Make sure provided signature has not already been used
-    if(usedSignatures.includes(signature)) return false;
+    if(usedSignatures.includes(signature)) return false
 
     // Recover originator of signature
     const recover = ethers.utils.verifyMessage(message, signature)
 
     // Ensure recovered address is equal to 'address'
-    if(recover !== address) return false;
+    if(recover !== address) return false
 
     // Add signature to DB to prevent reuse
-    usedSignatures.push(signature);
+    usedSignatures.push(signature)
     await setDoc(doc(sigRef, 'UsedSignatures'), {
         usedSignatures: usedSignatures,
-    });
+    })
 
     // If all checks are passed, return true
-    return true;
+    return true
 
 }

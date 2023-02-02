@@ -25,10 +25,10 @@ export const SetState = async (req) => {
     const code = await provider.getCode(contract)
 
     if(code === 'invalid') {
-        throw('Network was not specified')
+        throw 'Network was not specified'
     }
     if(code === '0x') {
-        throw('Address entered is not a contract address')
+        throw 'Address entered is not a contract address'
     }
 
     // Initialize smart contract object
@@ -39,10 +39,10 @@ export const SetState = async (req) => {
     const owner = await NFTContract.owner()
 
     if(!isAdmin) {
-        throw('We are not authorized to update this contract')
+        throw 'We are not authorized to update this contract'
     }
     if(owner.toLowerCase() !== sender.toLowerCase()) {
-        throw('Sender is not the contract owner')
+        throw 'Sender is not the contract owner'
     }
 
     const result = {

@@ -7,7 +7,7 @@ import { Alchemy } from "alchemy-sdk"
 
 export const ContractOwners = async (req) => {
     const contract = req.query.contract
-    const network = req.query.network;
+    const network = req.query.network
 
     const setNetwork = network === 'mainnet' ? "eth-mainnet" : network === 'goerli' ? "eth-goerli" : network === 'polygon' ? "polygon-mainnet" : 'eth-mainnet'
 
@@ -16,7 +16,7 @@ export const ContractOwners = async (req) => {
         network: setNetwork
     };
     
-    const alchemy = new Alchemy(settings);
+    const alchemy = new Alchemy(settings)
 
     const owners = await alchemy.nft.getOwnersForContract(contract)
 
