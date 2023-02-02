@@ -2,7 +2,7 @@ import express from 'express'
 export const router = express.Router()
 import bodyParser from 'body-parser'
 import dotenv from 'dotenv'
-dotenv.config();
+dotenv.config()
 
 import { NFTBalance } from './functions/NFTBalance.js'
 import { TokenBalance } from './functions/TokenBalance.js'
@@ -19,7 +19,8 @@ import { AppendWhitelist } from './functions/AppendWhitelist.js'
 import { ETHBalance } from './functions/ETHBalance.js'
 import { SignatureAuth } from './functions/SignatureAuth.js'
 import { GetOwnedContracts } from './functions/GetOwnedContracts.js'
-import { SetState } from './functions/SetState.js';
+import { SetState } from './functions/SetState.js'
+import { GetCollectionOwner } from './functions/GetCollectionOwner.js'
 
 router.use(bodyParser.json())
 
@@ -30,8 +31,8 @@ router.use(bodyParser.json())
  * @returns bool
  */
 function auth(req) {
-    if(!process.env.API_KEYS.split(',').includes(req.query.api_key)) return false;
-    return true;
+    if(!process.env.API_KEYS.split(',').includes(req.query.api_key)) return false
+    return true
 }
 
 /**
@@ -43,13 +44,13 @@ function auth(req) {
  */
 router.get('/nft_balance', async (req, res) => {
     try{
-        const result = await NFTBalance(req);
+        const result = await NFTBalance(req)
 
-        res.json(result);
+        res.json(result)
     } catch (error) {
-        res.json({success: false, error: error});
+        res.json({success: false, error: error})
     }
-});
+})
 
 /**
  * Returns the amount of ERC20 tokens owned by the wallet for the given contract address
@@ -60,14 +61,14 @@ router.get('/nft_balance', async (req, res) => {
  */
 router.get('/token_balance', async (req, res) => { 
     try {
-        const result = await TokenBalance(req);
+        const result = await TokenBalance(req)
 
-        res.json(result);
+        res.json(result)
     } catch(err) {
-        res.json({success: false, error: err});
+        res.json({success: false, error: err})
     }
 
-});
+})
 
 /**
  * Returns the amount of ETH owned by the wallet
@@ -77,11 +78,11 @@ router.get('/token_balance', async (req, res) => {
  */
 router.get('/eth_balance', async (req, res) => {
     try{
-        const result = await ETHBalance(req);
+        const result = await ETHBalance(req)
 
-        res.json(result);
+        res.json(result)
     } catch (error) {
-        res.json({success: false, errors: error});
+        res.json({success: false, errors: error})
     }
 })
 
@@ -96,14 +97,14 @@ router.get('/eth_balance', async (req, res) => {
  * @returns tx hash of resulting tx
  */
 router.get('/relay', async (req, res) => {
-    !auth(req) ? res.status(401).send('Access Denied') : console.log('authorized');
+    !auth(req) ? res.status(401).send('Access Denied') : console.log('authorized')
 
     try{
-        const result = await Relay(req);
+        const result = await Relay(req)
 
-        res.json(result);
+        res.json(result)
     } catch(error) {
-        res.json({success: false, errors: error});
+        res.json({success: false, errors: error})
     }
 })
 
@@ -116,11 +117,11 @@ router.get('/relay', async (req, res) => {
  */
 router.get('/get_selector', async (req, res) => {
     try{
-       const result = await GetSelector(req);
+       const result = await GetSelector(req)
 
-        res.json(result);
+        res.json(result)
     } catch(error) {
-        res.send(error);
+        res.send(error)
     }
 })
 
@@ -133,11 +134,11 @@ router.get('/get_selector', async (req, res) => {
  */
 router.get('/get_encoded_params', async (req, res) => {
     try{
-        const result = await GetEncodedParams(req);
+        const result = await GetEncodedParams(req)
 
-        res.json(result);
+        res.json(result)
     } catch(error) {
-        res.send(error);
+        res.send(error)
     }
 })
 
@@ -150,11 +151,11 @@ router.get('/get_encoded_params', async (req, res) => {
  */
 router.get('/get_relay_nonce', async (req, res) => {
     try{
-        const result = await GetRelayNonce(req);
+        const result = await GetRelayNonce(req)
 
-        res.json(result);
+        res.json(result)
     } catch (error) {
-        res.send(error);
+        res.send(error)
     }
 })
 
@@ -166,14 +167,14 @@ router.get('/get_relay_nonce', async (req, res) => {
  */
 router.get('/owned_nfts', async(req, res) => {
     try{
-        const result = await OwnedNFTs(req);
+        const result = await OwnedNFTs(req)
 
-        res.json(result);
+        res.json(result)
     } catch (error) {
-        console.log(error);
+        console.log(error)
         res.json({success: false, error: error})
     }
-});
+})
 
 /**
  * @param req includes the following members
@@ -183,9 +184,9 @@ router.get('/owned_nfts', async(req, res) => {
  */
 router.get('/contract_owners', async (req, res) => {
     try{
-        const result = await ContractOwners(req);
+        const result = await ContractOwners(req)
 
-        res.json(result);
+        res.json(result)
     } catch (error) {
         res.json({success: false, error: error})
     }
@@ -204,11 +205,11 @@ router.get('/contract_owners', async (req, res) => {
  */
 router.get('/merkle_proof', async (req, res) => {
     try{
-        const result = await MerkleProof(req);
+        const result = await MerkleProof(req)
 
-        res.json(result);
+        res.json(result)
     } catch (error) {
-        res.json({error: error, success: false});
+        res.json({error: error, success: false})
     }
 })
 
@@ -221,11 +222,11 @@ router.get('/merkle_proof', async (req, res) => {
  */
 router.get('/merkle_root', async (req, res) => {
     try{
-        const result = await MerkleRoot(req);
+        const result = await MerkleRoot(req)
 
-        res.json(result);
+        res.json(result)
     } catch (error) {
-        res.json({error: error, success: false});
+        res.json({error: error, success: false})
     }
 })
 
@@ -247,14 +248,14 @@ router.get('/merkle_root', async (req, res) => {
  * @returns address of resulting smart contract
  */
 router.get('/deploy_nft', async (req, res) => {
-    const auth = await SignatureAuth(req);
-    !auth ? res.status(401).send('Access Denied') : console.log('authorized');
+    const auth = await SignatureAuth(req)
+    !auth ? res.status(401).send('Access Denied') : console.log('authorized')
     try{
-        const result = await DeployNFT(req);
+        const result = await DeployNFT(req)
 
-        res.json(result);
+        res.json(result)
     } catch (error) {
-        res.json({error: error, success: false});
+        res.json({error: error, success: false})
     }
 })
 
@@ -275,16 +276,16 @@ router.get('/deploy_nft', async (req, res) => {
  * ^ used to authenticate that the request came from the wallet provided
  */
 router.get('/append_whitelist', async (req, res) => {
-    const auth = await SignatureAuth(req);
-    !auth ? res.status(401).send('Access Denied') : console.log('authorized');
+    const auth = await SignatureAuth(req)
+    !auth ? res.status(401).send('Access Denied') : console.log('authorized')
 
     try{
-        const result = await AppendWhitelist(req);
+        const result = await AppendWhitelist(req)
 
-        res.json(result);
+        res.json(result)
     } catch(error) {
-        console.log(error);
-        res.json({error: error, success: false});
+        console.log(error)
+        res.json({error: error, success: false})
     }
 })
 
@@ -297,15 +298,15 @@ router.get('/append_whitelist', async (req, res) => {
  * @note only returns data about contracts deployed through this API
  */
 router.get('/get_owned_contracts', async (req, res) => {
-    const auth = await SignatureAuth(req);
-    !auth ? res.status(401).send('Access Denied') : console.log('authorized');
+    const auth = await SignatureAuth(req)
+    !auth ? res.status(401).send('Access Denied') : console.log('authorized')
     try {
-        const result = await GetOwnedContracts(req);
+        const result = await GetOwnedContracts(req)
 
-        res.json(result);
+        res.json(result)
     } catch (error) {
         console.log(error)
-        res.json({error: error, success: false});
+        res.json({error: error, success: false})
     }
 })
 
@@ -320,12 +321,12 @@ router.get('/get_owned_contracts', async (req, res) => {
  */
 router.get('/signature_auth', async (req, res) => {
     try {
-        const auth = await SignatureAuth(req);
+        const auth = await SignatureAuth(req)
 
-        res.json(auth);
+        res.json(auth)
     } catch (error) {
-        console.log(error);
-        res.json({success: false, error: error});
+        console.log(error)
+        res.json({success: false, error: error})
     }
 })
 
@@ -343,24 +344,33 @@ router.get('/signature_auth', async (req, res) => {
  */
 router.get('/set_state', async (req, res) => {
     try {
-        const auth = await SignatureAuth(req);
-        !auth ? res.status(401).send('Access Denied') : console.log('authorized');
+        const auth = await SignatureAuth(req)
+        !auth ? res.status(401).send('Access Denied') : console.log('authorized')
 
-        const result = await SetState(req);
-        res.json(result);        
+        const result = await SetState(req)
+        res.json(result)        
     } catch (error) {
-        res.json({success: false, error: error});
+        res.json({success: false, error: error})
     }
 })
 
 router.get('/set_price', async (req,res) => {
     try{
-        const auth = await SignatureAuth(req);
-        !auth ? res.status(401).send('Access Denied') : console.log('authorized');
+        const auth = await SignatureAuth(req)
+        !auth ? res.status(401).send('Access Denied') : console.log('authorized')
 
-        const result = await SetPrice(req);
-        res.json(result);
+        const result = await SetPrice(req)
+        res.json(result)
     } catch (error) {
-        res.json({success: false, error: error});
+        res.json({success: false, error: error})
+    }
+})
+
+router.get('/get_collection_owner', async (req,res) => {
+    try{
+        const result = await GetCollectionOwner(req)
+        res.json(result)
+    } catch (error) {
+        res.json({success: false, error: error})
     }
 })
