@@ -29,7 +29,7 @@ export const GetProvider = (network) => {
             break
 
         default:
-            throw 'network is null or not supported'
+            throw 'network is invalid or not supported'
     }
 
     return provider

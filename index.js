@@ -366,6 +366,13 @@ router.get('/set_price', async (req,res) => {
     }
 })
 
+/**
+ * @param req contains the following members
+ * contract - address of smart contract 
+ * network - network where smart contract is deployed
+ * 
+ * @returns wallet address that currently owns that smart contract
+ */
 router.get('/get_collection_owner', async (req,res) => {
     try{
         const result = await GetCollectionOwner(req)
