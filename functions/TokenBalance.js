@@ -11,8 +11,6 @@ export const TokenBalance = async (req) => {
 
     const provider = GetProvider(network)
 
-    let error = {errors: []}
-
     if(contract === "" || contract === undefined) {
         throw 'Invalid or empty contract address'
     }
