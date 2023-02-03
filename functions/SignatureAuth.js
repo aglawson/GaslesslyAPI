@@ -7,7 +7,9 @@
 import { initializeApp } from "firebase/app"
 import { ethers } from "ethers"
 import { getFirestore, collection, query, getDocs, where, setDoc, doc } from 'firebase/firestore/lite'
-0
+import { deploy_nft_abi } from "../abi.js"
+import { GetProvider } from "./GetProvider.js"
+
 const firebaseConfig = {
     apiKey: process.env.fb_key,
     authDomain: process.env.authDomain,
@@ -27,6 +29,9 @@ export const SignatureAuth = async(req) => {
     const signature = req.query.signature
     const address = req.query.wallet
     const message = req.query.message
+
+    const provider = await GetProvider('polygon');
+    const contract = new ethers.Contract(process.env.membership_contract, deploy_nft_abi, provider)
 
     // Retrieve all used signatures from DB 
     const sigRef = collection(db, 'Signatures')
@@ -49,6 +54,9 @@ export const SignatureAuth = async(req) => {
     await setDoc(doc(sigRef, 'UsedSignatures'), {
         usedSignatures: usedSignatures,
     })
+
+    const nftBal = await contract.balanceOf(address)
+    if(parseInt(nftBal) < 1) return false;
 
     // If all checks are passed, return true
     return true
