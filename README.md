@@ -1,5 +1,6 @@
 # Gaslessly API
 Allows users to gaslessly deploy and manage NFT smart contracts on 6 different EVM chains.
+* NOTE: users must own an [access NFT](https://opensea.io/collection/gaslessly) to interact with functions that require blockchain transactions.
 ## Endpoints
 See [index.js](https://github.com/aglawson/GaslesslyAPI/blob/main/index.js) for documentation about each endpoint.
 ## Functions
