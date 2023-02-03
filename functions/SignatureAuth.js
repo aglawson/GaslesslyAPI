@@ -43,17 +43,17 @@ export const SignatureAuth = async(req) => {
     // Make sure provided signature has not already been used
     if(usedSignatures.includes(signature)) return false
 
-    // Recover originator of signature
-    const recover = ethers.utils.verifyMessage(message, signature)
-
-    // Ensure recovered address is equal to 'address'
-    if(recover !== address) return false
-
     // Add signature to DB to prevent reuse
     usedSignatures.push(signature)
     await setDoc(doc(sigRef, 'UsedSignatures'), {
         usedSignatures: usedSignatures,
     })
+
+    // Recover originator of signature
+    const recover = ethers.utils.verifyMessage(message, signature)
+
+    // Ensure recovered address is equal to 'address'
+    if(recover !== address) return false
 
     const nftBal = await contract.balanceOf(address)
     if(parseInt(nftBal) < 1) return false;
