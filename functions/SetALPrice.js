@@ -1,7 +1,8 @@
 /**
  * @description This file contains the logic to securely and
  * gaslessly update the price of an NFT from a given smart contract
- * address. The request must be sent with the parameters deailed in index.js.
+ * address for whitelisted users. 
+ * The request must be sent with the parameters deailed in index.js.
  * 
  * Security is enforced by requiring a signature from the requesting user.
  * The signature and message are used to recover the original signer. This 
@@ -14,7 +15,7 @@ import { deploy_nft_abi } from "../abi.js"
 import { ethers } from "ethers"
 import { GetProvider } from "./GetProvider.js"
 
-export const SetPrice = async (req) => {
+export const SetALPrice = async (req) => {
     // Get input params
     const contract = req.query.contract
     const network = req.query.network
@@ -54,7 +55,7 @@ export const SetPrice = async (req) => {
     const signer = new ethers.Wallet(process.env.PRIVATE_KEY, provider)
 
     // Write new price to smart contract
-    const tx = await NFTContract.connect(signer).setPrice(price.toString())
+    const tx = await NFTContract.connect(signer).setALPrice(price.toString())
     result.output.tx = tx.hash
 
     return result

@@ -21,6 +21,7 @@ import { SignatureAuth } from './functions/SignatureAuth.js'
 import { GetOwnedContracts } from './functions/GetOwnedContracts.js'
 import { SetState } from './functions/SetState.js'
 import { GetCollectionOwner } from './functions/GetCollectionOwner.js'
+import { SetALPrice } from './functions/SetALPrice.js'
 
 router.use(bodyParser.json())
 
@@ -354,12 +355,42 @@ router.get('/set_state', async (req, res) => {
     }
 })
 
+/**
+ * @param req contains the following members
+ * contract - address of smart contract to update
+ * price - new price
+ * wallet - originator of function call (verified by SignatureAuth)
+ * network - network where the smart contract is deployed
+ * 
+ * @note signature and message are also members sent in the request for SignatureAuth
+ */
 router.get('/set_price', async (req,res) => {
     try{
         const auth = await SignatureAuth(req)
         !auth ? res.status(401).send('Access Denied') : console.log('authorized')
 
         const result = await SetPrice(req)
+        res.json(result)
+    } catch (error) {
+        res.json({success: false, error: error})
+    }
+})
+
+/**
+ * @param req contains the following members
+ * contract - address of smart contract to update
+ * price - new price
+ * wallet - originator of function call (verified by SignatureAuth)
+ * network - network where the smart contract is deployed
+ * 
+ * @note signature and message are also members sent in the request for SignatureAuth
+ */
+router.get('/set_al_price', async (req,res) => {
+    try{
+        const auth = await SignatureAuth(req)
+        !auth ? res.status(401).send('Access Denied') : console.log('authorized')
+
+        const result = await SetALPrice(req)
         res.json(result)
     } catch (error) {
         res.json({success: false, error: error})
@@ -381,3 +412,4 @@ router.get('/get_collection_owner', async (req,res) => {
         res.json({success: false, error: error})
     }
 })
+
