@@ -412,4 +412,3 @@ router.get('/get_collection_owner', async (req,res) => {
         res.json({success: false, error: error})
     }
 })
-

@@ -19,6 +19,7 @@ See [index.js](https://github.com/aglawson/GaslesslyAPI/blob/main/index.js) for 
 * [NFTBalance](https://github.com/aglawson/GaslesslyAPI/blob/main/functions/NFTBalance.js)
 * [OwnedNFTs](https://github.com/aglawson/GaslesslyAPI/blob/main/functions/OwnedNFTs.js)
 * [Relay](https://github.com/aglawson/GaslesslyAPI/blob/main/functions/Relay.js)
+* [SetALPrice](https://github.com/aglawson/GaslesslyAPI/blob/main/functions/SetALPrice.js)
 * [SetPrice](https://github.com/aglawson/GaslesslyAPI/blob/main/functions/SetPrice.js)
 * [SetState](https://github.com/aglawson/GaslesslyAPI/blob/main/functions/SetState.js)
 * [SignatureAuth](https://github.com/aglawson/GaslesslyAPI/blob/main/functions/SignatureAuth.js)
