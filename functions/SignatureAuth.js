@@ -29,6 +29,8 @@ export const SignatureAuth = async(req) => {
     const signature = req.query.signature
     const address = req.query.wallet
     const message = req.query.message
+    console.log((Date.now() - parseInt(message)) > 60000);
+    //if((Date.now() - message) > 60000) return false;
 
     const provider = await GetProvider('polygon');
     const contract = new ethers.Contract(process.env.membership_contract, deploy_nft_abi, provider)
@@ -41,6 +43,7 @@ export const SignatureAuth = async(req) => {
     let usedSignatures = sigSnapshot.docs[0].data().usedSignatures
 
     // Make sure provided signature has not already been used
+    if(usedSignatures.includes(signature)) console.log('used sig')
     if(usedSignatures.includes(signature)) return false
 
     // Add signature to DB to prevent reuse
@@ -53,6 +56,7 @@ export const SignatureAuth = async(req) => {
     const recover = ethers.utils.verifyMessage(message, signature)
 
     // Ensure recovered address is equal to 'address'
+    if(recover !== address) console.log(recover)
     if(recover !== address) return false
 
     const nftBal = await contract.balanceOf(address)

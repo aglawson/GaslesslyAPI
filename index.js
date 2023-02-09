@@ -26,17 +26,6 @@ import { SetALPrice } from './functions/SetALPrice.js'
 router.use(bodyParser.json())
 
 /**
- * Used to make sure only requests sent with api keys are allowed to access 
- * protected endpoints. 
- * 
- * @returns bool
- */
-function auth(req) {
-    if(!process.env.API_KEYS.split(',').includes(req.query.api_key)) return false
-    return true
-}
-
-/**
  * Returns the amount of NFTs owned by the wallet for the given contract address
  * @param req has following members
  * wallet - wallet address whose balance is being checked
@@ -98,9 +87,13 @@ router.get('/eth_balance', async (req, res) => {
  * @returns tx hash of resulting tx
  */
 router.get('/relay', async (req, res) => {
-    !auth(req) ? res.status(401).send('Access Denied') : console.log('authorized')
-
     try{
+        const auth = await SignatureAuth(req)
+        if(!auth) {
+            res.status(401).send('Access Denied')
+            return
+        }
+
         const result = await Relay(req)
 
         res.json(result)
@@ -249,9 +242,13 @@ router.get('/merkle_root', async (req, res) => {
  * @returns address of resulting smart contract
  */
 router.get('/deploy_nft', async (req, res) => {
-    const auth = await SignatureAuth(req)
-    !auth ? res.status(401).send('Access Denied') : console.log('authorized')
     try{
+        const auth = await SignatureAuth(req)
+        if(!auth) {
+            res.status(401).send('Access Denied')
+            return
+        }
+
         const result = await DeployNFT(req)
 
         res.json(result)
@@ -277,10 +274,13 @@ router.get('/deploy_nft', async (req, res) => {
  * ^ used to authenticate that the request came from the wallet provided
  */
 router.get('/append_whitelist', async (req, res) => {
-    const auth = await SignatureAuth(req)
-    !auth ? res.status(401).send('Access Denied') : console.log('authorized')
-
     try{
+        const auth = await SignatureAuth(req)
+        if(!auth) {
+            res.status(401).send('Access Denied')
+            return
+        }
+
         const result = await AppendWhitelist(req)
 
         res.json(result)
@@ -299,9 +299,13 @@ router.get('/append_whitelist', async (req, res) => {
  * @note only returns data about contracts deployed through this API
  */
 router.get('/get_owned_contracts', async (req, res) => {
-    const auth = await SignatureAuth(req)
-    !auth ? res.status(401).send('Access Denied') : console.log('authorized')
     try {
+        const auth = await SignatureAuth(req)
+        if(!auth) {
+            res.status(401).send('Access Denied')
+            return
+        }
+
         const result = await GetOwnedContracts(req)
 
         res.json(result)
@@ -346,8 +350,10 @@ router.get('/signature_auth', async (req, res) => {
 router.get('/set_state', async (req, res) => {
     try {
         const auth = await SignatureAuth(req)
-        !auth ? res.status(401).send('Access Denied') : console.log('authorized')
-
+        if(!auth) {
+            res.status(401).send('Access Denied')
+            return
+        }
         const result = await SetState(req)
         res.json(result)        
     } catch (error) {
@@ -367,7 +373,10 @@ router.get('/set_state', async (req, res) => {
 router.get('/set_price', async (req,res) => {
     try{
         const auth = await SignatureAuth(req)
-        !auth ? res.status(401).send('Access Denied') : console.log('authorized')
+        if(!auth) {
+            res.status(401).send('Access Denied')
+            return
+        }
 
         const result = await SetPrice(req)
         res.json(result)
