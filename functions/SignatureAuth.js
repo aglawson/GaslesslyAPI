@@ -6,7 +6,7 @@
  */
 import { initializeApp } from "firebase/app"
 import { ethers } from "ethers"
-import { getFirestore, collection, query, getDocs, where, setDoc, doc } from 'firebase/firestore/lite'
+import { getFirestore, collection, query, getDocs, setDoc, doc } from 'firebase/firestore/lite'
 import { deploy_nft_abi } from "../abi.js"
 import { GetProvider } from "./GetProvider.js"
 
