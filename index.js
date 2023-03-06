@@ -30,7 +30,7 @@ router.use(bodyParser.json())
  * @param req has following members
  * wallet - wallet address whose balance is being checked
  * contract - contract address of NFT
- * network - 'goerli' or 'mainnet'
+ * network - 'goerli', 'mainnet', 'arbitrum', 'optimism', 'polygon', 'avax'
  */
 router.get('/nft_balance', async (req, res) => {
     try{
@@ -47,7 +47,7 @@ router.get('/nft_balance', async (req, res) => {
  * @param req has following members
  * wallet - wallet address whose balance is being checked
  * contract - contract address of ERC20 token
- * network - 'goerli' or 'mainnet'
+ * network - 'goerli', 'mainnet', 'arbitrum', 'optimism', 'polygon', 'avax'
  */
 router.get('/token_balance', async (req, res) => { 
     try {
@@ -64,7 +64,7 @@ router.get('/token_balance', async (req, res) => {
  * Returns the amount of ETH owned by the wallet
  * @param req has following members
  * wallet - wallet address whose balance is being checked
- * network - 'goerli' or 'mainnet'
+ * network - 'goerli', 'mainnet', 'arbitrum', 'optimism', 'polygon', 'avax'
  */
 router.get('/eth_balance', async (req, res) => {
     try{
@@ -80,7 +80,7 @@ router.get('/eth_balance', async (req, res) => {
  * @param req has following members
  * wallet - wallet address on behalf of whom the tx is being sent
  * contract - address of recipient of tx
- * network - 'goerli' or 'mainnet' //currently only goerli supported
+ * network - 'goerli', 'mainnet', 'arbitrum', 'optimism', 'polygon', 'avax' //currently only goerli supported
  * signature - wallet's signature of the tx data
  * reqStruct - struct containing tx data {from: address, to: address, value: uint, gas: uint, nonce: uint, data: (hash of tx data)}
  * 
@@ -138,7 +138,7 @@ router.get('/get_encoded_params', async (req, res) => {
 
 /**
  * @param req includes following members
- * network - 'goerli' or 'mainnet' -> only goerli currently supported
+ * network - 'goerli', 'mainnet', 'arbitrum', 'optimism', 'polygon', 'avax' -> only goerli currently supported
  * wallet - wallet address of user
  * 
  * @returns nonce of wallet according to relayer contract - needed for relay function
@@ -340,7 +340,7 @@ router.get('/signature_auth', async (req, res) => {
  * wallet - address of user (must be contract owner)
  * contract - address of contract being updated
  * state - integer from 0 - 2 (0->closed, 1->allow list only, 2->public mint)
- * network - 'goerli' or 'mainnet', whichever the contract is on
+ * network - 'goerli', 'mainnet', 'arbitrum', 'optimism', 'polygon', 'avax', whichever the contract is on
  * 
  * message - message being signed by wallet
  * signature - hash resulting from wallet signature of message
