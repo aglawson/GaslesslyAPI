@@ -26,7 +26,7 @@ import { IsOriginalMinter } from './functions/IsOriginalMinter.js'
 
 router.use(bodyParser.json())
 
-router.get('/get_original_minter', async (req, res) => {
+router.get('/is_original_minter', async (req, res) => {
     try {
         const result = await IsOriginalMinter(req)
 
