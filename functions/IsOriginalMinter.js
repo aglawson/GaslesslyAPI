@@ -1,5 +1,17 @@
 import { Alchemy } from "alchemy-sdk"
 
+/**
+ * 
+ * @param req contains wallet, contract, tokenId
+ * wallet - suspected minter
+ * contract - address of NFT
+ * tokenId - ID of NFT in question
+ * network - name of blockchain where contract is deployed (ex: eth-mainnet, polygon)
+ * 
+ * @returns true if wallet was the original minter of tokenId from contract
+ *          false otherwise
+ */
+
 export const IsOriginalMinter = async (req) => {
     const network = req.query.network
     const setNetwork = network === 'mainnet' ? "eth-mainnet" : network === 'goerli' ? "eth-goerli" : network === 'polygon' ? "polygon-mainnet" : 'invalid'
