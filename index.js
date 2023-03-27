@@ -22,8 +22,19 @@ import { GetOwnedContracts } from './functions/GetOwnedContracts.js'
 import { SetState } from './functions/SetState.js'
 import { GetCollectionOwner } from './functions/GetCollectionOwner.js'
 import { SetALPrice } from './functions/SetALPrice.js'
+import { IsOriginalMinter } from './functions/IsOriginalMinter.js'
 
 router.use(bodyParser.json())
+
+router.get('/get_original_minter', async (req, res) => {
+    try {
+        const result = await IsOriginalMinter(req)
+
+        res.json(result)
+    } catch (error) {
+        res.json({success: false, error: error})
+    }
+})
 
 /**
  * Returns the amount of NFTs owned by the wallet for the given contract address
