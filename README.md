@@ -14,6 +14,7 @@ See [index.js](https://github.com/aglawson/GaslesslyAPI/blob/main/index.js) for 
 * [GetProvider](https://github.com/aglawson/GaslesslyAPI/blob/main/functions/GetProvider.js)
 * [GetRelayNonce](https://github.com/aglawson/GaslesslyAPI/blob/main/functions/GetRelayNonce.js)
 * [GetSelector](https://github.com/aglawson/GaslesslyAPI/blob/main/functions/GetSelector.js)
+* [IsOriginalMinter](https://github.com/aglawson/GaslesslyAPI/blob/main/functions/IsOriginalMinter.js)
 * [MerkleProof](https://github.com/aglawson/GaslesslyAPI/blob/main/functions/MerkleProof.js)
 * [MerkleRoot](https://github.com/aglawson/GaslesslyAPI/blob/main/functions/MerkleRoot.js)
 * [NFTBalance](https://github.com/aglawson/GaslesslyAPI/blob/main/functions/NFTBalance.js)
