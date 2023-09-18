@@ -23,6 +23,7 @@ import { SetState } from './functions/SetState.js'
 import { GetCollectionOwner } from './functions/GetCollectionOwner.js'
 import { SetALPrice } from './functions/SetALPrice.js'
 import { IsOriginalMinter } from './functions/IsOriginalMinter.js'
+import { Drip } from './functions/Drip.js'
 
 router.use(bodyParser.json())
 
@@ -430,5 +431,14 @@ router.get('/get_collection_owner', async (req,res) => {
         res.json(result)
     } catch (error) {
         res.json({success: false, error: error})
+    }
+})
+
+router.get('/drip', async (req,res) => {
+    try{
+        const result = await Drip(req);
+        res.json(result);
+    } catch (error) {
+        res.json({success: false, error: error});
     }
 })
