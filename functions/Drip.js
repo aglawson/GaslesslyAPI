@@ -242,9 +242,9 @@ export const Drip = async (req) => {
         throw 'User does not exist';
     }
 
-    if(Date.now() - docs.docs[0].data().lastDrip < 86400000) {
-        throw 'Must wait 24hrs from last claim'
-    }
+    // if(Date.now() - docs.docs[0].data().lastDrip < 86400000) {
+    //     throw 'Must wait 24hrs from last claim'
+    // }
 
     await setDoc(doc(docRef, recipient), {
         lastDrip: Date.now()
@@ -257,6 +257,7 @@ export const Drip = async (req) => {
     console.log(signer)
 
     const tx = await FaucetContract.connect(signer).drip(recipient, '10000000000000000');
+
     return tx
     } catch (error) {
         console.log(error)

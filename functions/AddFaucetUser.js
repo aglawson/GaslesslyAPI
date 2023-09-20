@@ -2,6 +2,7 @@ import dotenv from 'dotenv'
 dotenv.config()
 import { getFirestore, collection, query, getDocs, where, setDoc, doc } from 'firebase/firestore/lite'
 import { initializeApp } from "firebase/app"
+import { SignatureAuth } from './SignatureAuth.js'
 
 const firebaseConfig = {
     apiKey: process.env.fb_key,
@@ -19,6 +20,11 @@ const db = getFirestore(fb)
 export const AddFaucetUser = async (req) => {
     const wallet = req.query.wallet
     const handle = req.query.handle
+
+    const verify = await SignatureAuth(req)
+    if(!verify) {
+        throw 'invalid signature'
+    }
 
     const userRef = collection(db, 'faucet_users')
     const q = query(userRef, where('handle', '==', handle))

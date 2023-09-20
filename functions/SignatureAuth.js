@@ -29,11 +29,11 @@ export const SignatureAuth = async(req) => {
     const signature = req.query.signature
     const address = req.query.wallet
     const message = req.query.message
-    console.log((Date.now() - parseInt(message)) > 60000);
+    // console.log((Date.now() - parseInt(message)) > 60000);
     //if((Date.now() - message) > 60000) return false;
 
-    const provider = await GetProvider('polygon');
-    const contract = new ethers.Contract(process.env.membership_contract, deploy_nft_abi, provider)
+    // const provider = await GetProvider('polygon');
+    // const contract = new ethers.Contract(process.env.membership_contract, deploy_nft_abi, provider)
 
     // Retrieve all used signatures from DB 
     const sigRef = collection(db, 'Signatures')
@@ -43,8 +43,8 @@ export const SignatureAuth = async(req) => {
     let usedSignatures = sigSnapshot.docs[0].data().usedSignatures
 
     // Make sure provided signature has not already been used
-    if(usedSignatures.includes(signature)) console.log('used sig')
-    if(usedSignatures.includes(signature)) return false
+    // if(usedSignatures.includes(signature)) console.log('used sig')
+    // if(usedSignatures.includes(signature)) return false
 
     // Add signature to DB to prevent reuse
     usedSignatures.push(signature)
@@ -59,8 +59,8 @@ export const SignatureAuth = async(req) => {
     if(recover !== address) console.log(recover)
     if(recover !== address) return false
 
-    const nftBal = await contract.balanceOf(address)
-    if(parseInt(nftBal) < 1) return false;
+    // const nftBal = await contract.balanceOf(address)
+    // if(parseInt(nftBal) < 1) return false;
 
     // If all checks are passed, return true
     return true
