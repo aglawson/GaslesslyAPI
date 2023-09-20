@@ -1,4 +1,8 @@
 import { ethers } from "ethers"
+import {getFirestore, collection, query, getDocs, where, setDoc, doc } from 'firebase/firestore/lite'
+import { initializeApp } from "firebase/app"
+import dotenv from 'dotenv'
+dotenv.config()
 
 const faucet_abi = [
     {
@@ -212,10 +216,39 @@ const faucet_abi = [
 
 export const Drip = async (req) => {
     try{
-    const recipient = req.query.recipient
+    const recipient = req.query.wallet;
     const provider = new ethers.providers.JsonRpcProvider("https://sepolia-rpc.scroll.io");
     const contract = "0xAE9EF6F43272C1F5c12cB7530B2868D4055FCbF6"
     const FaucetContract = new ethers.Contract(contract, faucet_abi, provider)
+
+    const firebaseConfig = {
+        apiKey: process.env.fb_key,
+        authDomain: process.env.authDomain,
+        projectId: process.env.projectId,
+        storageBucket: process.env.storageBucket,
+        messagingSenderId: process.env.messagingSenderId,
+        appId: process.env.appId,
+        measurementId: process.env.measurementId
+    }
+    
+    const app = initializeApp(firebaseConfig)
+    const db = getFirestore(app)
+
+    const docRef = collection(db, 'faucet_users')
+    const q = query(docRef, where("wallet", "==", recipient))
+    const docs = await getDocs(q)
+
+    if(docs.docs.length === 0) {
+        throw 'User does not exist';
+    }
+
+    if(Date.now() - docs.docs[0].data().lastDrip < 86400000) {
+        throw 'Must wait 24hrs from last claim'
+    }
+
+    await setDoc(doc(docRef, recipient), {
+        lastDrip: Date.now()
+    }, {merge: true})
 
     console.log(FaucetContract)
     
@@ -223,9 +256,7 @@ export const Drip = async (req) => {
 
     console.log(signer)
 
-    // Write new price to smart contract
     const tx = await FaucetContract.connect(signer).drip(recipient, '10000000000000000');
-
     return tx
     } catch (error) {
         console.log(error)

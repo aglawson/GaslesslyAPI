@@ -24,6 +24,11 @@ import { GetCollectionOwner } from './functions/GetCollectionOwner.js'
 import { SetALPrice } from './functions/SetALPrice.js'
 import { IsOriginalMinter } from './functions/IsOriginalMinter.js'
 import { Drip } from './functions/Drip.js'
+import { AddFaucetUser } from './functions/AddFaucetUser.js'
+import { GetAuthTokens } from './functions/GetAuthTokens.js'
+import { TwitterLookup, getAccessToken, getAuthUrl } from './functions/TwitterLookup.js'
+import { UpdateUser } from './functions/UpdateUser.js'
+import { GetUser } from './functions/GetUser.js'
 
 router.use(bodyParser.json())
 
@@ -437,6 +442,70 @@ router.get('/get_collection_owner', async (req,res) => {
 router.get('/drip', async (req,res) => {
     try{
         const result = await Drip(req);
+        res.json(result);
+    } catch (error) {
+        res.json({success: false, error: error});
+    }
+})
+
+router.get('/add_faucet_user', async (req, res) => {
+    try{
+        const result = await AddFaucetUser(req);
+        res.json(result);
+    } catch (error) {
+        console.log(error)
+        res.json({success: false, error: error});
+    }
+})
+
+router.get('/get_auth_tokens', async (req, res) => {
+    try {
+        const result = await GetAuthTokens(req);
+        res.json(result);
+    } catch (error) {
+        res.json({success: false, error: error});
+    }
+})
+
+router.get('/get_auth_url', async (req, res) => {
+    try {
+        const result = await getAuthUrl(req);
+        res.json(result);
+    } catch (error) {
+        res.json({success: false, error: error});
+    }
+})
+
+router.get('/twitter_lookup', async (req, res) => {
+    try{
+        const result = await TwitterLookup(req);
+        res.json(result);
+    } catch (error) {
+        res.json({success: false, error: error});
+    }
+})
+
+router.get('/update_user', async (req, res) => {
+    try{
+        const result = await UpdateUser(req);
+        res.json(result);
+    } catch (error) {
+        res.json({success: false, error: error});
+    }
+})
+
+router.get('/get_access_token', async (req, res) => {
+    try{
+        const result = await getAccessToken(req)
+        res.json(result)
+    } catch (error) {
+        res.json({success: false, error: error})
+    }
+})
+
+router.get('/get_user', async (req, res) => {
+    try{
+        const result = await GetUser(req);
         res.json(result);
     } catch (error) {
         res.json({success: false, error: error});
