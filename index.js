@@ -29,6 +29,8 @@ import { GetAuthTokens } from './functions/GetAuthTokens.js'
 import { TwitterLookup, getAccessToken, getAuthUrl } from './functions/TwitterLookup.js'
 import { UpdateUser } from './functions/UpdateUser.js'
 import { GetUser } from './functions/GetUser.js'
+import { GetFaucetUserCount } from './functions/GetFaucetUserCount.js'
+import { GetDripAmount } from './functions/GetDripAmount.js'
 
 router.use(bodyParser.json())
 
@@ -507,6 +509,24 @@ router.get('/get_user', async (req, res) => {
     try{
         const result = await GetUser(req);
         res.json(result);
+    } catch (error) {
+        res.json({success: false, error: error});
+    }
+})
+
+router.get('/get_faucet_user_count', async (req, res) => {
+    try{
+        const result = await GetFaucetUserCount(req);
+        res.json({users: result});
+    } catch (error) {
+        res.json({success: false, error: error});
+    }
+})
+
+router.get('/get_drip_amount', async (req, res) => {
+    try{
+        const result = await GetDripAmount();
+        res.json({amount: result});
     } catch (error) {
         res.json({success: false, error: error});
     }
