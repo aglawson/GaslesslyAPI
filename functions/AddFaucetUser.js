@@ -19,20 +19,21 @@ const db = getFirestore(fb)
 
 export const AddFaucetUser = async (req) => {
     const wallet = req.query.wallet
-    const handle = req.query.handle
+    console.log('wallet param', wallet)
+    // const handle = req.query.handle
 
-    const verify = await SignatureAuth(req)
-    if(!verify) {
-        throw 'invalid signature'
-    }
+    // const verify = await SignatureAuth(req)
+    // if(!verify) {
+    //     throw 'invalid signature'
+    // }
 
     const userRef = collection(db, 'faucet_users')
-    const q = query(userRef, where('handle', '==', handle))
+    const q = query(userRef, where('wallet', '==', wallet))
     const userSnapshot = await getDocs(q)
 
     if(userSnapshot.docs.length == 0) {
         await setDoc(doc(userRef, wallet), {
-            handle: handle,
+            // handle: handle,
             wallet: wallet
         });
     } else {

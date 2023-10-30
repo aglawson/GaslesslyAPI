@@ -21,6 +21,8 @@ export async function GetUser(req) {
     const q = query(docRef, where("wallet", "==", wallet))
     const docs = await getDocs(q)
 
+    console.log('user lookup for wallet: ', wallet, docs.docs[0])
+
     if(docs.docs.length === 0) {
         return null
     }

@@ -13,40 +13,40 @@ export const Drip = async (req) => {
     const contract = "0xA38e65FC71e31493FE2Fb4FeAB8f712D93706D70"
     const FaucetContract = new ethers.Contract(contract, faucet_abi, provider)
 
-    const firebaseConfig = {
-        apiKey: process.env.fb_key,
-        authDomain: process.env.authDomain,
-        projectId: process.env.projectId,
-        storageBucket: process.env.storageBucket,
-        messagingSenderId: process.env.messagingSenderId,
-        appId: process.env.appId,
-        measurementId: process.env.measurementId
-    }
+    // const firebaseConfig = {
+    //     apiKey: process.env.fb_key,
+    //     authDomain: process.env.authDomain,
+    //     projectId: process.env.projectId,
+    //     storageBucket: process.env.storageBucket,
+    //     messagingSenderId: process.env.messagingSenderId,
+    //     appId: process.env.appId,
+    //     measurementId: process.env.measurementId
+    // }
     
-    const app = initializeApp(firebaseConfig)
-    const db = getFirestore(app)
+    // const app = initializeApp(firebaseConfig)
+    // const db = getFirestore(app)
 
-    const docRef = collection(db, 'faucet_users')
-    const q = query(docRef, where("wallet", "==", recipient))
-    const docs = await getDocs(q)
+    // const docRef = collection(db, 'faucet_users')
+    // const q = query(docRef, where("wallet", "==", recipient))
+    // const docs = await getDocs(q)
 
-    if(docs.docs.length === 0) {
-        throw 'User does not exist';
-    }
+    // if(docs.docs.length === 0) {
+    //     throw 'User does not exist';
+    // }
 
     // if(Date.now() - docs.docs[0].data().lastDrip < 86400000) {
     //     throw 'Must wait 24hrs from last claim'
     // }
 
-    await setDoc(doc(docRef, recipient), {
-        lastDrip: Date.now()
-    }, {merge: true})
+    // await setDoc(doc(docRef, recipient), {
+    //     lastDrip: Date.now()
+    // }, {merge: true})
 
-    console.log(FaucetContract)
+    // console.log(FaucetContract)
     
     const signer = new ethers.Wallet(process.env.PRIVATE_KEY, provider)
 
-    console.log(signer)
+    // console.log(signer)
 
     const tx = await FaucetContract.connect(signer).drip(recipient);
 
