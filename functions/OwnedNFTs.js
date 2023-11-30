@@ -23,20 +23,19 @@ export const OwnedNFTs = async (req) => {
     const total = nfts.totalCount
     let data = {total: 0, nfts: []}
 
-    for (const n of nfts.ownedNfts) {
-        data.nfts.push({
-            n
-            // name: n.contract.name,
-            // symbol: n.contract.symbol,
-            // address: n.contract.address,
-            // token_id: n.tokenId
-        })
-    }
+    // for (const n of nfts.ownedNfts) {
+    //     data.nfts.push({
+    //         name: n.contract.name,
+    //         symbol: n.contract.symbol,
+    //         address: n.contract.address,
+    //         token_id: n.tokenId
+    //     })
+    // }
     data.total = total
 
     const result = {
         inputs: {wallet: wallet},
-        output: {data: data},
+        output: {data: nfts.ownedNfts},
         success: true
     }
 
